@@ -1,11 +1,16 @@
 package com.sniperoftdm.booktracker.ui.book
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sniperoftdm.booktracker.data.local.CoverStorage
 import com.sniperoftdm.booktracker.data.model.Book
 import com.sniperoftdm.booktracker.data.model.BookStatus
+import com.sniperoftdm.booktracker.data.repository.BookLookupRepository
 import com.sniperoftdm.booktracker.data.repository.BookRepository
 import com.sniperoftdm.booktracker.data.repository.BookResult
+import com.sniperoftdm.booktracker.domain.BookCandidate
 import com.sniperoftdm.booktracker.domain.SessionValidator
 import com.sniperoftdm.booktracker.domain.StatsCalculator
 import com.sniperoftdm.booktracker.domain.ValidationReason
@@ -33,20 +38,32 @@ data class AddEditBookUiState(
     val initialBook: Book? = null,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
-    val requiredPaceLive: Int? = null
+    val requiredPaceLive: Int? = null,
+    val coverPath: String? = null,
+    val previewCoverUri: Uri? = null,
+    val removeCover: Boolean = false,
+    val isbn: String? = null,
+    val openLibraryKey: String? = null,
+    val candidateToDownload: BookCandidate? = null
 ) {
     val isEditing: Boolean get() = bookId != null
+    val effectiveCoverPath: String?
+        get() = if (removeCover) null else if (previewCoverUri != null) previewCoverUri.toString() else coverPath
+
     val hasUnsavedChanges: Boolean
         get() {
             if (initialBook == null) {
-                return title.isNotBlank() || author.isNotBlank() || totalPagesInput.isNotBlank() || startPageInput != "0" || goalDate != null
+                return title.isNotBlank() || author.isNotBlank() || totalPagesInput.isNotBlank() ||
+                        startPageInput != "0" || goalDate != null || previewCoverUri != null || candidateToDownload != null
             }
             return title != initialBook.title ||
                     author != initialBook.author ||
                     totalPagesInput != initialBook.totalPages.toString() ||
                     startPageInput != initialBook.startPage.toString() ||
                     status != initialBook.status ||
-                    (goalDate?.toEpochDay() != initialBook.goalDateEpochDay)
+                    (goalDate?.toEpochDay() != initialBook.goalDateEpochDay) ||
+                    previewCoverUri != null ||
+                    removeCover
         }
 }
 
@@ -59,6 +76,8 @@ class AddEditBookViewModel(
     private val repository: BookRepository,
     private val statsCalculator: StatsCalculator = StatsCalculator(),
     private val validator: SessionValidator = SessionValidator(),
+    private val coverStorage: CoverStorage? = null,
+    private val bookLookupRepository: BookLookupRepository? = null,
     private val bookId: Long? = null,
     private val zone: ZoneId = ZoneId.systemDefault()
 ) : ViewModel() {
@@ -85,6 +104,9 @@ class AddEditBookViewModel(
                             currentPage = currentPage,
                             goalDate = book.goalDateEpochDay?.let { LocalDate.ofEpochDay(it) },
                             status = book.status,
+                            coverPath = book.coverPath,
+                            isbn = book.isbn,
+                            openLibraryKey = book.openLibraryKey,
                             initialBook = book,
                             isLoading = false
                         )
@@ -122,6 +144,49 @@ class AddEditBookViewModel(
 
     fun onStatusChange(newStatus: BookStatus) {
         _uiState.update { it.copy(status = newStatus) }
+    }
+
+    fun onCoverSelected(uri: Uri) {
+        _uiState.update { it.copy(previewCoverUri = uri, removeCover = false) }
+    }
+
+    fun onRemoveCover() {
+        _uiState.update { it.copy(previewCoverUri = null, removeCover = true, candidateToDownload = null) }
+    }
+
+    /** Pre-populate form fields from selected Open Library candidate. */
+    fun applyCandidate(candidate: BookCandidate) {
+        _uiState.update { current ->
+            val coverUrl = when {
+                candidate.coverId != null -> "https://covers.openlibrary.org/b/id/${candidate.coverId}-M.jpg"
+                !candidate.isbn.isNullOrBlank() -> "https://covers.openlibrary.org/b/isbn/${candidate.isbn}-M.jpg?default=false"
+                else -> null
+            }
+            current.copy(
+                title = candidate.title,
+                author = candidate.authors.joinToString(", "),
+                totalPagesInput = candidate.pages?.toString() ?: current.totalPagesInput,
+                isbn = candidate.isbn ?: current.isbn,
+                openLibraryKey = candidate.openLibraryKey,
+                coverPath = coverUrl ?: current.coverPath,
+                candidateToDownload = candidate,
+                removeCover = false
+            )
+        }
+        recalculateRequiredPace()
+    }
+
+    /** Look up book directly from scanned ISBN. */
+    fun onIsbnScanned(isbn: String) {
+        val repo = bookLookupRepository ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val result = repo.lookupIsbn(isbn)
+            _uiState.update { it.copy(isLoading = false) }
+            if (result is com.sniperoftdm.booktracker.domain.LookupResult.Success && result.candidates.isNotEmpty()) {
+                applyCandidate(result.candidates.first())
+            }
+        }
     }
 
     private fun recalculateRequiredPace() {
@@ -164,7 +229,7 @@ class AddEditBookViewModel(
         return null
     }
 
-    fun save() {
+    fun save(context: Context? = null) {
         val validation = validate()
         if (validation != null) {
             viewModelScope.launch {
@@ -181,34 +246,76 @@ class AddEditBookViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
 
-            val result = if (state.isEditing && state.initialBook != null) {
+            if (state.isEditing && state.initialBook != null && bookId != null) {
+                var updatedCoverPath = state.initialBook.coverPath
+                if (state.removeCover) {
+                    coverStorage?.delete(bookId)
+                    updatedCoverPath = null
+                } else if (state.previewCoverUri != null && context != null && coverStorage != null) {
+                    val saved = coverStorage.saveFromUri(context, state.previewCoverUri, bookId)
+                    if (saved != null) {
+                        updatedCoverPath = saved
+                    }
+                }
+
                 val updatedBook = state.initialBook.copy(
                     title = state.title.trim(),
                     author = state.author.trim(),
                     totalPages = total,
                     startPage = start,
                     status = state.status,
-                    goalDateEpochDay = goalEpochDay
+                    goalDateEpochDay = goalEpochDay,
+                    coverPath = updatedCoverPath,
+                    isbn = state.isbn ?: state.initialBook.isbn,
+                    openLibraryKey = state.openLibraryKey ?: state.initialBook.openLibraryKey
                 )
-                repository.updateBook(updatedBook)
+                val result = repository.updateBook(updatedBook)
+                _uiState.update { it.copy(isSaving = false) }
+                when (result) {
+                    is BookResult.Success -> _events.send(AddEditBookEvent.Saved)
+                    is BookResult.ValidationError -> _events.send(AddEditBookEvent.Error(result.reason))
+                }
             } else {
-                repository.addBook(
+                val result = repository.addBook(
                     title = state.title.trim(),
                     author = state.author.trim(),
                     totalPages = total,
                     startPage = start,
-                    goalDateEpochDay = goalEpochDay
+                    goalDateEpochDay = goalEpochDay,
+                    isbn = state.isbn,
+                    openLibraryKey = state.openLibraryKey,
+                    coverPath = null
                 )
-            }
-
-            when (result) {
-                is BookResult.Success -> {
-                    _uiState.update { it.copy(isSaving = false) }
-                    _events.send(AddEditBookEvent.Saved)
-                }
-                is BookResult.ValidationError -> {
-                    _uiState.update { it.copy(isSaving = false) }
-                    _events.send(AddEditBookEvent.Error(result.reason))
+                when (result) {
+                    is BookResult.Success -> {
+                        val newBookId = result.data
+                        var savedCoverPath: String? = null
+                        if (state.previewCoverUri != null && context != null && coverStorage != null) {
+                            savedCoverPath = coverStorage.saveFromUri(context, state.previewCoverUri, newBookId)
+                        } else if (state.candidateToDownload != null && bookLookupRepository != null && coverStorage != null) {
+                            try {
+                                val tempCover = bookLookupRepository.downloadCover(state.candidateToDownload)
+                                if (tempCover != null) {
+                                    savedCoverPath = coverStorage.saveFromFile(tempCover, newBookId)
+                                    tempCover.delete()
+                                }
+                            } catch (e: Exception) {
+                                // Cover download failure must NOT block saving the book
+                            }
+                        }
+                        if (savedCoverPath != null) {
+                            val inserted = repository.observeBook(newBookId).first()
+                            if (inserted != null) {
+                                repository.updateBook(inserted.copy(coverPath = savedCoverPath))
+                            }
+                        }
+                        _uiState.update { it.copy(isSaving = false) }
+                        _events.send(AddEditBookEvent.Saved)
+                    }
+                    is BookResult.ValidationError -> {
+                        _uiState.update { it.copy(isSaving = false) }
+                        _events.send(AddEditBookEvent.Error(result.reason))
+                    }
                 }
             }
         }

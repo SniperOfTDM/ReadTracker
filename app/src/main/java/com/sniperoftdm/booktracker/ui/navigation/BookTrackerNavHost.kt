@@ -42,6 +42,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.compose.ui.platform.LocalContext
+import com.sniperoftdm.booktracker.flavor.FlavorUi
 import com.sniperoftdm.booktracker.AppContainer
 import com.sniperoftdm.booktracker.R
 import com.sniperoftdm.booktracker.data.model.Book
@@ -312,14 +314,31 @@ fun BookTrackerNavHost(
 
                 // Add Book Route
                 composable<AddBookRoute> {
+                    val context = LocalContext.current
                     val addViewModel = remember {
                         AddEditBookViewModel(
                             repository = container.repository,
                             statsCalculator = container.statsCalculator,
-                            validator = container.sessionValidator
+                            validator = container.sessionValidator,
+                            coverStorage = container.coverStorage,
+                            bookLookupRepository = container.bookLookupRepository
                         )
                     }
                     val addState by addViewModel.uiState.collectAsStateWithLifecycle()
+
+                    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+                    val candidateJson by savedStateHandle?.getStateFlow<String?>("selected_candidate", null)?.collectAsStateWithLifecycle()
+                        ?: remember { mutableStateOf(null) }
+
+                    LaunchedEffect(candidateJson) {
+                        candidateJson?.let { jsonStr ->
+                            try {
+                                val candidate = kotlinx.serialization.json.Json.decodeFromString<com.sniperoftdm.booktracker.domain.BookCandidate>(jsonStr)
+                                addViewModel.applyCandidate(candidate)
+                            } catch (_: Exception) {}
+                            savedStateHandle?.remove<String>("selected_candidate")
+                        }
+                    }
 
                     LaunchedEffect(Unit) {
                         addViewModel.events.collect { event ->
@@ -338,19 +357,25 @@ fun BookTrackerNavHost(
                         onStartPageChange = { addViewModel.onStartPageChange(it) },
                         onGoalDateChange = { addViewModel.onGoalDateChange(it) },
                         onStatusChange = { addViewModel.onStatusChange(it) },
-                        onSave = { addViewModel.save() },
+                        onCoverSelected = { addViewModel.onCoverSelected(it) },
+                        onRemoveCover = { addViewModel.onRemoveCover() },
+                        onNavigateToSearch = { navController.navigate(SearchOnlineRoute) },
+                        onIsbnScanned = { addViewModel.onIsbnScanned(it) },
+                        onSave = { addViewModel.save(context) },
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
 
                 // Edit Book Route
                 composable<EditBookRoute> { backStack ->
+                    val context = LocalContext.current
                     val route = backStack.toRoute<EditBookRoute>()
                     val editViewModel = remember(route.bookId) {
                         AddEditBookViewModel(
                             repository = container.repository,
                             statsCalculator = container.statsCalculator,
                             validator = container.sessionValidator,
+                            coverStorage = container.coverStorage,
                             bookId = route.bookId
                         )
                     }
@@ -373,7 +398,9 @@ fun BookTrackerNavHost(
                         onStartPageChange = { editViewModel.onStartPageChange(it) },
                         onGoalDateChange = { editViewModel.onGoalDateChange(it) },
                         onStatusChange = { editViewModel.onStatusChange(it) },
-                        onSave = { editViewModel.save() },
+                        onCoverSelected = { editViewModel.onCoverSelected(it) },
+                        onRemoveCover = { editViewModel.onRemoveCover() },
+                        onSave = { editViewModel.save(context) },
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
@@ -386,6 +413,11 @@ fun BookTrackerNavHost(
                 // Legacy Debug Screen Route
                 composable<DebugRoute> {
                     DebugScreen(container = container)
+                }
+
+                // Flavor Routes
+                with(FlavorUi) {
+                    flavorRoutes(navController = navController, appContainer = container)
                 }
             }
 

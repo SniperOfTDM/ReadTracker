@@ -28,3 +28,6 @@ object DebugRoute
 
 @Serializable
 object ClayGalleryRoute
+
+@Serializable
+object SearchOnlineRoute
