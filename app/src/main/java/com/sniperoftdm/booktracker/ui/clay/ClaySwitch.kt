@@ -40,7 +40,7 @@ fun ClaySwitch(
     val trackColor = if (checked) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
-        clayColors.face
+        if (clayColors.isDark) Color(0xFF1E1A17) else Color(0xFFEDE4D8)
     }
 
     val thumbOffset by animateDpAsState(

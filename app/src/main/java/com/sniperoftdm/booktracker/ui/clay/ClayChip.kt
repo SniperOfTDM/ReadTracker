@@ -37,10 +37,17 @@ fun ClayChip(
     val surfaceColor = if (selected) activeColor else inactiveColor
     val elevation = if (selected) ClayElevation.Inset else ClayElevation.Raised
 
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer
+
     val contentColor = if (selected) {
-        clayColors.textOnAccent(activeColor)
+        if (activeColor == primaryContainer) {
+            onPrimaryContainer
+        } else {
+            clayColors.textOnAccent(activeColor)
+        }
     } else {
-        MaterialTheme.colorScheme.onSurface
+        clayColors.contentColorFor(inactiveColor)
     }
 
     Box(

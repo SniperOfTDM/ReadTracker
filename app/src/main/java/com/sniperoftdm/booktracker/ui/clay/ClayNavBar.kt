@@ -21,6 +21,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -48,6 +49,7 @@ fun ClayNavBar(
 
     Box(
         modifier = modifier
+            .testTag("clay_nav_bar")
             .fillMaxWidth()
             .padding(
                 horizontal = Dimens.navBarHorizontalMargin,

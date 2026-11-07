@@ -49,23 +49,17 @@ fun ClayGalleryScreen(
     var selectedChipIndex by remember { mutableIntStateOf(0) }
     var selectedSegmentIndex by remember { mutableIntStateOf(1) }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(Dimens.spaceLarge),
-        verticalArrangement = Arrangement.spacedBy(Dimens.spaceLarge)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    ClayScreenScaffold(
+        modifier = modifier,
+        isTopLevel = false,
+        title = {
             Text(
-                text = "Clay Component Gallery",
-                style = MaterialTheme.typography.headlineLarge,
+                text = "Clay Gallery",
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
+        },
+        actions = {
             ClayButton(
                 onClick = onBack,
                 variant = ClayButtonVariant.OutlinedInset,
@@ -74,6 +68,19 @@ fun ClayGalleryScreen(
                 Text("Close")
             }
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    start = Dimens.spaceLarge,
+                    end = Dimens.spaceLarge,
+                    top = Dimens.spaceSmall,
+                    bottom = paddingValues.calculateBottomPadding()
+                ),
+            verticalArrangement = Arrangement.spacedBy(Dimens.spaceLarge)
+        ) {
 
         // 1. Cards and Elevations
         Text("1. Cards & Elevations", style = MaterialTheme.typography.titleLarge)
@@ -262,6 +269,7 @@ fun ClayGalleryScreen(
 
         Spacer(modifier = Modifier.height(Dimens.spaceHuge))
     }
+}
 }
 
 @BookTrackerPreviews

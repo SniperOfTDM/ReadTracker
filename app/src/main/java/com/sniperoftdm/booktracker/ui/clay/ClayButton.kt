@@ -52,8 +52,8 @@ fun ClayButton(
 
     val contentColor = when (variant) {
         ClayButtonVariant.Filled -> MaterialTheme.colorScheme.onPrimary
-        ClayButtonVariant.Tonal -> LightInk
-        ClayButtonVariant.OutlinedInset -> MaterialTheme.colorScheme.onSurface
+        ClayButtonVariant.Tonal -> clayColors.textOnAccent(clayColors.sage)
+        ClayButtonVariant.OutlinedInset -> clayColors.contentColorFor(clayColors.face)
     }
 
     val elevation = when (variant) {

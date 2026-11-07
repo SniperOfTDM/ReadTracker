@@ -51,7 +51,7 @@ fun ClayProgressBar(
             .height(trackHeight)
             .clay(
                 shape = ClayShapes.pill,
-                color = clayColors.face,
+                color = if (clayColors.isDark) Color(0xFF191512) else Color(0xFFEDE4D8),
                 elevation = ClayElevation.Inset
             )
             .semantics {
@@ -107,9 +107,9 @@ fun ClayProgressRing(
             val arcSize = Size(diameter, diameter)
 
             // 1. Inset background track groove
-            // Outer shadow / dark bevel
+            // Deep outer bevel/shade
             drawArc(
-                color = clayColors.shade.copy(alpha = 0.25f),
+                color = if (clayColors.isDark) Color(0xFF120E0C) else Color(0xFFDFD4C5),
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -117,15 +117,25 @@ fun ClayProgressRing(
                 size = arcSize,
                 style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
             )
-            // Track base
+            // Recessed track channel
             drawArc(
-                color = clayColors.face,
+                color = if (clayColors.isDark) Color(0xFF1A1613) else Color(0xFFEDE4D8),
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
                 topLeft = topLeft,
                 size = arcSize,
                 style = Stroke(width = strokeWidthPx - 2.dp.toPx(), cap = StrokeCap.Round)
+            )
+            // Lighter groove edge highlight
+            drawArc(
+                color = if (clayColors.isDark) Color.White.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.5f),
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = Stroke(width = 1.dp.toPx(), cap = StrokeCap.Round)
             )
 
             // 2. Raised active progress arc
