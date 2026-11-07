@@ -1,105 +1,124 @@
 # ReadTracker 📚
 
-> **Offline-first reading tracker for Android.**  
-> Log checkpoints, track your daily pace, calculate accurate finish date estimates, and visualize reading habits with a soft, tactile Claymorphism UI.
+<div align="center">
+
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-SDK%2026%E2%80%9335-3DDC84.svg?style=for-the-badge&logo=android&logoColor=white)
+![Compose](https://img.shields.io/badge/Jetpack_Compose-Claymorphism-4285F4.svg?style=for-the-badge&logo=jetpackcompose&logoColor=white)
+![Room](https://img.shields.io/badge/Room%20DB-v3%20Migration-FF6F00.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
+
+**Tactile, privacy-respecting, offline-first reading companion for Android.**
+
+*Log real checkpoints, estimate finish dates dynamically, and store custom book covers inside a bespoke 3D Claymorphism design.*
+
+</div>
 
 ---
 
-## Overview
+## 🌟 Why ReadTracker?
 
-**ReadTracker** is a single-user, offline-first Android application designed to track real-life reading progress across multiple books in parallel. Rather than manually logging arbitrary durations, users record real page checkpoints ("I am now on page 142"). The app dynamically calculates velocity, rolling averages, streaks, and estimated completion dates on the fly.
+Most book trackers ask you to start a timer or guess arbitrary reading sessions. **ReadTracker** works how you actually read: you open your book, read, and log your checkpoint: *"I am on page 142."*
 
-Everything lives locally on device in **Room** and **DataStore**. There are no accounts, no cloud servers, no tracking telemetry, and no network permissions required.
-
----
-
-## Key Features
-
-- **Tactile Claymorphism UI**: Custom hand-crafted 3D clay components (`ClaySurface`, `ClayCard`, `ClayButton`, `ClayProgress`, `ClayNavBar`) using zero-blur canvas shaders for instant 60fps rendering without GPU memory overhead.
-- **Dynamic Stats Calculation**: Real-time pace metrics calculated from raw checkpoints:
-  - Daily average & rolling last-7-days average
-  - Estimated completion date per book and total library ETA
-  - Streak tracking (current & longest) and personal best day
-  - Yearly reading goal progress tracking
-- **Reading Visualization**:
-  - Interactive Reading Heatmap showing activity density
-  - 14-day page bar charts with goal reference lines
-  - Tactile page steppers with direct input
-- **Session Timer & Notes**:
-  - Background-resilient reading session timer backed by DataStore
-  - Rich reading notes and quote tracking per book
-- **Home Screen Widget**:
-  - Glance-based Android home screen widget displaying currently reading book and quick page logging shortcuts
-- **Offline Backup & Restore**:
-  - Export and import full library data, sessions, and notes via clean, schema-versioned JSON.
-- **Accessibility & Density Ready**:
-  - Full dark theme support, WCAG AA compliant contrast ratios, and responsive layouts across compact phones to foldables.
+From that single number, ReadTracker dynamically derives:
+- **Velocity & Consistency**: Daily averages, rolling 7-day velocity, and active streaks.
+- **Finish Date Predictions**: Dynamic ETA per book and across your entire active library.
+- **Visual Analytics**: Interactive GitHub-style reading heatmap and 14-day pace bars.
+- **Local Privacy**: No telemetry, no accounts, no cloud database. Your data never leaves your device.
 
 ---
 
-## Architecture & Tech Stack
+## 🎨 Tactile Claymorphism Design
 
-The project follows modern Android architecture patterns with single-directional data flow (UDF) and clean MVVM separation:
+ReadTracker features a custom, zero-dependency Claymorphism design system built entirely with Jetpack Compose canvas drawing:
+- **Dual-tone soft shadows**: Inner and outer bevels simulate tactile, physical clay surfaces.
+- **60 FPS Hardware Acceleration**: Zero blur passes and minimal GPU overhead.
+- **Custom Primitives**: `ClaySurface`, `ClayCard`, `ClayButton`, `ClayDialog`, `ClayNavBar`, and `ClayProgress`.
+- **Dynamic Book Covers**: Clay-framed covers with real spine accents, soft edge highlights, and gallery cover import.
+
+---
+
+## 📦 Download Flavors (Offline vs. Online)
+
+ReadTracker is built from a single codebase into two specialized product flavors:
+
+| Flavor | Internet Permission | Capabilities | Privacy Guarantee |
+| :--- | :--- | :--- | :--- |
+| **ReadTrackerOffline** | **None** (`android.permission.INTERNET` removed) | 100% offline. Manual book entry, checkpoint logging, local photo gallery cover picker, offline JSON backup. | Absolute zero network access enforced at the Android manifest level. |
+| **ReadTrackerWithInt** | **Scoped** (`openlibrary.org` only) | All offline capabilities plus optional Open Library title/author/ISBN search and automatic cover downloading. | Only query text or scanned ISBN is sent to Open Library. No user data, notes, or statistics ever leave the phone. |
+
+### Seamless In-Place Switching
+Both flavors share the same `applicationId` (`com.sniperoftdm.booktracker`), Room database schema (`v3`), and signing key. You can install one build over the other at any time to upgrade or downgrade without losing your library data.
+
+### Independent Permission Verification
+Verify the offline APK independently before installing:
+```bash
+# Verify via Android Asset Packaging Tool
+aapt2 dump permissions ReadTrackerOffline-<version>.apk
+```
+Confirm that `android.permission.INTERNET` does not appear anywhere in the manifest output.
+
+---
+
+## 🏗️ Architecture & Clean Domain Separation
 
 ```
 app/
 ├── data/
-│   ├── backup/         # Offline JSON backup and restore repository
-│   ├── local/          # Room database, entities (Book, Session, Note), converters, DAOs
-│   ├── model/          # Core domain data models & enums
-│   └── repository/     # Repository implementations (Book, Settings, Timer)
-├── domain/             # Pure Kotlin calculation engines (StatsCalculator, SessionValidator)
+│   ├── backup/         # Version-aware JSON backup repository (v1 & v2 support)
+│   ├── local/          # Room database (v3), CoverStorage (downscale & cache), DAOs
+│   ├── model/          # Pure domain models (Book, Session, Note, BookCandidate)
+│   └── repository/     # Data repositories with reactive StateFlow streams
+├── domain/             # Pure Kotlin algorithmic calculation engines (StatsCalculator)
+├── flavor/             # Compile-time flavor dependencies (NoOp vs. Online repository)
 ├── ui/
-│   ├── book/           # Add/Edit book workflows
-│   ├── clay/           # Reusable Claymorphism design primitives & custom modifiers
-│   ├── components/     # High-level reading UI components (Heatmap, Charts, Steppers)
-│   ├── detail/         # Book detail, session history, note dialogs
-│   ├── home/           # Dashboard with active books & quick log actions
-│   ├── library/        # Filterable book catalog
-│   ├── log/            # Quick-log bottom sheet & standalone activity
-│   ├── navigation/     # Jetpack Navigation Compose graph & routes
-│   ├── settings/       # App preferences, yearly goals, backup management
-│   ├── stats/          # Deep-dive reading analytics
-│   ├── theme/          # Clay color tokens, typography, shapes, and dimensions
-│   └── widget/         # Glance App Widget receiver & layout
-└── worker/             # WorkManager daily reminder workers & notification scheduler
+│   ├── book/           # Add/Edit book workflows with Photo Picker integration
+│   ├── clay/           # Bespoke Claymorphism components, dialogs, and shaders
+│   ├── components/     # High-level reading components (Heatmap, Covers, Steppers)
+│   ├── detail/         # Book detail inspection, reading logs, and quote collection
+│   ├── home/           # Active shelf dashboard with quick log triggers
+│   ├── library/        # Searchable, filterable library catalog
+│   ├── settings/       # App preferences, yearly reading target, and JSON backup
+│   └── stats/          # Reading velocity and pace visualization
+└── widget/             # AndroidX Glance interactive home screen widget
 ```
-
-- **Language**: Kotlin 2.0+
-- **UI Toolkit**: Jetpack Compose, Material 3
-- **Local Storage**: Room 2.6 (SQLite), Jetpack DataStore Preferences
-- **Asynchrony**: Kotlin Coroutines & StateFlow
-- **Widgets**: AndroidX Glance
-- **Background Tasks**: AndroidX WorkManager
-- **Build System**: Gradle Version Catalogs (`libs.versions.toml`)
 
 ---
 
-## Building from Source
+## 🚀 Building & Testing
 
 ### Prerequisites
-- Android Studio Ladybug | 2024.2.1 or newer
-- JDK 17+
-- Android SDK 35 (minSdk 26)
+- **Android Studio** Ladybug (2024.2.1+)
+- **JDK 17**
+- **Android SDK 35** (Minimum SDK 26)
 
-### Clone & Build
+### Build Commands
 ```bash
+# Clone the repository
 git clone https://github.com/SniperOfTDM/ReadTracker.git
 cd ReadTracker
-./gradlew assembleDebug
+
+# Build offline debug APK
+./gradlew assembleOfflineDebug
+
+# Build online debug APK
+./gradlew assembleOnlineDebug
+
+# Run automated offline security permission verification
+./gradlew verifyOfflineHasNoInternet
 ```
 
-### Running Tests
+### Running Test Suites
 ```bash
-# Unit tests (Stats calculations, validators, backup)
-./gradlew testDebugUnitTest
+# Run unit tests across both flavors
+./gradlew testOfflineDebugUnitTest testOnlineDebugUnitTest
 
-# Instrumentation tests (Room DAOs, migrations, UI validation)
-./gradlew connectedDebugAndroidTest
+# Run instrumented tests on an emulator or connected device
+./gradlew connectedOfflineDebugAndroidTest
 ```
 
 ---
 
-## License
+## 📄 License
 
-This project is licensed under the terms of the MIT License.
+This project is open source and available under the terms of the [MIT License](LICENSE).
