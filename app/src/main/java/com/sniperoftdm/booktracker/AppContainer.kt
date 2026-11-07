@@ -4,6 +4,8 @@ import android.content.Context
 import com.sniperoftdm.booktracker.data.backup.BackupRepository
 import com.sniperoftdm.booktracker.data.backup.BackupRepositoryImpl
 import com.sniperoftdm.booktracker.data.local.BookTrackerDatabase
+import com.sniperoftdm.booktracker.data.local.CoverStorage
+import com.sniperoftdm.booktracker.data.repository.BookLookupRepository
 import com.sniperoftdm.booktracker.data.repository.BookRepository
 import com.sniperoftdm.booktracker.data.repository.BookRepositoryImpl
 import com.sniperoftdm.booktracker.data.repository.SettingsRepository
@@ -15,6 +17,7 @@ import com.sniperoftdm.booktracker.data.repository.timerDataStore
 import com.sniperoftdm.booktracker.domain.SessionValidator
 import com.sniperoftdm.booktracker.domain.StatsCalculator
 import com.sniperoftdm.booktracker.domain.StatsConfig
+import com.sniperoftdm.booktracker.flavor.FlavorDependencies
 import com.sniperoftdm.booktracker.ui.widget.BookTrackerWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +29,12 @@ class AppContainer(context: Context) {
 
     val database: BookTrackerDatabase =
         BookTrackerDatabase.getInstance(context)
+
+    val coverStorage: CoverStorage =
+        CoverStorage(context)
+
+    val bookLookupRepository: BookLookupRepository =
+        FlavorDependencies.provideBookLookupRepository(context)
 
     val sessionValidator: SessionValidator = SessionValidator()
 
@@ -47,6 +56,7 @@ class AppContainer(context: Context) {
             bookDao = database.bookDao(),
             sessionDao = database.sessionDao(),
             noteDao = database.noteDao(),
+            coverStorage = coverStorage,
             validator = sessionValidator,
             onDataChanged = notifyWidgetUpdate
         )
@@ -61,6 +71,7 @@ class AppContainer(context: Context) {
         BackupRepositoryImpl(
             database = database,
             settingsRepository = settingsRepository,
+            coverStorage = coverStorage,
             validator = sessionValidator,
             onDataChanged = notifyWidgetUpdate
         )

@@ -1,6 +1,7 @@
 package com.sniperoftdm.booktracker.data.repository
 
 import com.sniperoftdm.booktracker.data.local.BookDao
+import com.sniperoftdm.booktracker.data.local.CoverStorage
 import com.sniperoftdm.booktracker.data.local.NoteDao
 import com.sniperoftdm.booktracker.data.local.SessionDao
 import com.sniperoftdm.booktracker.data.model.Book
@@ -18,6 +19,7 @@ class BookRepositoryImpl(
     private val bookDao: BookDao,
     private val sessionDao: SessionDao,
     private val noteDao: NoteDao? = null,
+    private val coverStorage: CoverStorage? = null,
     private val validator: SessionValidator = SessionValidator(),
     private val onDataChanged: (() -> Unit)? = null
 ) : BookRepository {
@@ -27,7 +29,10 @@ class BookRepositoryImpl(
         author: String,
         totalPages: Int,
         startPage: Int,
-        goalDateEpochDay: Long?
+        goalDateEpochDay: Long?,
+        isbn: String?,
+        openLibraryKey: String?,
+        coverPath: String?
     ): BookResult<Long> = withContext(Dispatchers.IO) {
         val trimmedTitle = title.trim()
         val trimmedAuthor = author.trim()
@@ -48,7 +53,10 @@ class BookRepositoryImpl(
             startPage = startPage,
             status = BookStatus.READING,
             goalDateEpochDay = goalDateEpochDay,
-            createdAt = System.currentTimeMillis()
+            createdAt = System.currentTimeMillis(),
+            isbn = isbn,
+            openLibraryKey = openLibraryKey,
+            coverPath = coverPath
         )
         val id = bookDao.insert(book)
         onDataChanged?.invoke()
@@ -71,6 +79,7 @@ class BookRepositoryImpl(
     }
 
     override suspend fun deleteBook(book: Book): Unit = withContext(Dispatchers.IO) {
+        coverStorage?.delete(book.id)
         bookDao.delete(book)
         onDataChanged?.invoke()
     }

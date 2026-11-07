@@ -21,7 +21,10 @@ interface BookRepository {
         author: String,
         totalPages: Int,
         startPage: Int,
-        goalDateEpochDay: Long? = null
+        goalDateEpochDay: Long? = null,
+        isbn: String? = null,
+        openLibraryKey: String? = null,
+        coverPath: String? = null
     ): BookResult<Long>
 
     /** Update an existing book after validation. */
