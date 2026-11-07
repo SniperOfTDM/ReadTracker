@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import com.sniperoftdm.booktracker.ui.clay.ClayButtonVariant
 import com.sniperoftdm.booktracker.ui.clay.ClayCard
 import com.sniperoftdm.booktracker.ui.clay.ClayChip
 import com.sniperoftdm.booktracker.ui.clay.ClayElevation
+import com.sniperoftdm.booktracker.ui.components.BookCoverPlaceholder
 import com.sniperoftdm.booktracker.ui.components.DatePickerField
 import com.sniperoftdm.booktracker.ui.components.PageStepper
 import com.sniperoftdm.booktracker.ui.components.toMessage
@@ -119,20 +121,48 @@ fun QuickLogContent(
                         selected = isSelected,
                         onClick = { onAction(QuickLogUiAction.SelectBook(item.book.id)) }
                     ) {
-                        Text(
-                            text = "${item.book.title} (p. ${item.currentPage})",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            if (item.book.coverPath != null) {
+                                BookCoverPlaceholder(
+                                    title = item.book.title,
+                                    author = item.book.author,
+                                    coverPath = item.book.coverPath,
+                                    width = 16.dp,
+                                    height = 22.dp
+                                )
+                            }
+                            Text(
+                                text = "${item.book.title} (p. ${item.currentPage})",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
         } else if (selectedBook != null) {
-            Text(
-                text = "${selectedBook.title} · ${selectedBook.author}",
-                style = BookTrackerTypography.bookTitleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.spaceSmall)
+            ) {
+                if (selectedBook.coverPath != null) {
+                    BookCoverPlaceholder(
+                        title = selectedBook.title,
+                        author = selectedBook.author,
+                        coverPath = selectedBook.coverPath,
+                        width = 24.dp,
+                        height = 32.dp
+                    )
+                }
+                Text(
+                    text = "${selectedBook.title} · ${selectedBook.author}",
+                    style = BookTrackerTypography.bookTitleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         // 2. Page Stepper
@@ -162,7 +192,14 @@ fun QuickLogContent(
                     )
                 } else {
                     Text(
-                        text = stringResource(R.string.quick_log_preview_format, pageDelta, currentBookPage, displayPage, totalPages),
+                        text = pluralStringResource(
+                            R.plurals.quick_log_preview_pages,
+                            pageDelta,
+                            pageDelta,
+                            currentBookPage,
+                            displayPage,
+                            totalPages
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
@@ -218,7 +255,7 @@ fun QuickLogContent(
                         )
                         if (pph != null) {
                             Text(
-                                text = stringResource(R.string.pages_per_hour_format, pph),
+                                text = pluralStringResource(R.plurals.pages_per_hour, pph, pph),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = clayColors.textOnAccent(clayColors.butter)
                             )

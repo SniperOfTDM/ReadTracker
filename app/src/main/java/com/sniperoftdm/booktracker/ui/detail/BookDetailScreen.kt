@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import com.sniperoftdm.booktracker.ui.components.BookCoverPlaceholder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -165,11 +168,13 @@ fun BookDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .widthIn(max = Dimens.contentMaxWidth)
+                .navigationBarsPadding()
         ) {
             // Collapsing Top Bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .statusBarsPadding()
                     .padding(horizontal = Dimens.spaceMedium, vertical = Dimens.spaceSmall),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -274,6 +279,14 @@ fun BookDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        BookCoverPlaceholder(
+                            title = book.title,
+                            author = book.author,
+                            coverPath = book.coverPath,
+                            width = 72.dp,
+                            height = 104.dp
+                        )
+                        Spacer(modifier = Modifier.height(Dimens.spaceMedium))
                         Text(
                             text = book.title,
                             style = BookTrackerTypography.bookTitleLarge,
@@ -532,7 +545,7 @@ fun BookDetailScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = stringResource(R.string.no_reading_days_format, item.daysCount),
+                                                text = pluralStringResource(R.plurals.no_reading_days, item.daysCount, item.daysCount),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                                             )
@@ -734,7 +747,7 @@ fun BookDetailScreen(
                                                 modifier = Modifier
                                                     .clay(
                                                         shape = ClayShapes.chip,
-                                                        color = Color.White.copy(alpha = 0.5f),
+                                                        color = clayColors.face,
                                                         elevation = ClayElevation.Raised
                                                     )
                                                     .padding(horizontal = 8.dp, vertical = 4.dp)

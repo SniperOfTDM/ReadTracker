@@ -44,8 +44,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sniperoftdm.booktracker.R
+import androidx.compose.ui.res.pluralStringResource
 import com.sniperoftdm.booktracker.ui.clay.ClayButton
 import com.sniperoftdm.booktracker.ui.clay.ClayButtonVariant
+import com.sniperoftdm.booktracker.ui.clay.ClayScreenScaffold
 import com.sniperoftdm.booktracker.ui.clay.ClayCard
 import com.sniperoftdm.booktracker.ui.clay.ClayElevation
 import com.sniperoftdm.booktracker.ui.clay.ClayFab
@@ -77,14 +79,36 @@ fun HomeScreen(
 ) {
     val clayColors = LocalClayColors.current
     val listState = rememberLazyListState()
-    val isScrolled = listState.canScrollBackward
+    val formattedDate = remember {
+        LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault()))
+    }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.TopCenter
-    ) {
+    ClayScreenScaffold(
+        modifier = modifier,
+        title = {
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        subtitle = {
+            Text(
+                text = formattedDate,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        floatingActionButton = {
+            ClayFab(
+                onClick = { onOpenQuickLog(null) },
+                expanded = !listState.isScrollInProgress,
+                icon = { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.quick_log_title)) },
+                text = { Text(stringResource(R.string.shortcut_log_pages_short)) }
+            )
+        },
+        isTopLevel = true
+    ) { paddingValues ->
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -93,30 +117,11 @@ fun HomeScreen(
             contentPadding = PaddingValues(
                 start = Dimens.spaceLarge,
                 end = Dimens.spaceLarge,
-                top = Dimens.spaceLarge,
-                bottom = 120.dp // Leave room for floating nav bar
+                top = Dimens.spaceSmall,
+                bottom = paddingValues.calculateBottomPadding()
             ),
             verticalArrangement = Arrangement.spacedBy(Dimens.spaceLarge)
         ) {
-            // Header: Date & Title
-            item(key = "header") {
-                val formattedDate = remember {
-                    LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault()))
-                }
-                Column(modifier = Modifier.fillMaxWidth().padding(top = Dimens.spaceSmall)) {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = formattedDate,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
             // 1. Today Summary Hero Card
             item(key = "hero_today") {
                 TodaySummaryCard(
@@ -197,20 +202,6 @@ fun HomeScreen(
                     }
                 }
             }
-        }
-
-        // Floating Action Button
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = Dimens.spaceLarge, bottom = 96.dp)
-        ) {
-            ClayFab(
-                onClick = { onOpenQuickLog(null) },
-                expanded = !listState.isScrollInProgress,
-                icon = { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.quick_log_title)) },
-                text = { Text(stringResource(R.string.shortcut_log_pages_short)) }
-            )
         }
     }
 }
@@ -371,14 +362,20 @@ private fun TotalEtaCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
+                    val sharedPaceInt = totalEta.sharedPace.toInt()
                     Text(
-                        text = stringResource(R.string.shared_pace_format, totalEta.sharedPace.toInt()),
+                        text = pluralStringResource(R.plurals.shared_pace, sharedPaceInt, sharedPaceInt),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else if (yearlyGoalProgress != null) {
                     Text(
-                        text = stringResource(R.string.yearly_goal_summary, yearlyGoalProgress.finishedCount, yearlyGoalProgress.goal),
+                        text = pluralStringResource(
+                            R.plurals.books_finished_this_year,
+                            yearlyGoalProgress.goal,
+                            yearlyGoalProgress.finishedCount,
+                            yearlyGoalProgress.goal
+                        ),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +38,11 @@ import com.sniperoftdm.booktracker.R
 import com.sniperoftdm.booktracker.ui.clay.ClayBottomSheet
 import com.sniperoftdm.booktracker.ui.clay.ClayButton
 import com.sniperoftdm.booktracker.ui.clay.ClayButtonVariant
+import com.sniperoftdm.booktracker.ui.clay.ClayScreenScaffold
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import kotlin.math.abs
+import kotlin.math.ceil
 import com.sniperoftdm.booktracker.ui.clay.ClayCard
 import com.sniperoftdm.booktracker.ui.clay.ClayElevation
 import com.sniperoftdm.booktracker.ui.clay.ClayProgressRing
@@ -78,46 +84,43 @@ fun StatsScreen(
         StatsPeriod.ALL_TIME to stringResource(R.string.period_all_time)
     )
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .widthIn(max = Dimens.contentMaxWidth)
-        ) {
-            // Screen Header
+    ClayScreenScaffold(
+        modifier = modifier,
+        title = {
             Text(
                 text = stringResource(R.string.nav_stats),
                 style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = Dimens.spaceLarge, vertical = Dimens.spaceMedium)
+                color = MaterialTheme.colorScheme.onBackground
             )
-
-            if (global.totalPagesRead == 0 && global.pagesPerDay.isEmpty()) {
-                // Empty state
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(Dimens.spaceLarge),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EmptyState(
-                        title = stringResource(R.string.empty_stats_title),
-                        body = stringResource(R.string.empty_stats_body)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = Dimens.spaceLarge),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.spaceLarge)
-                ) {
+        },
+        isTopLevel = true
+    ) { paddingValues ->
+        if (global.totalPagesRead == 0 && global.pagesPerDay.isEmpty()) {
+            // Empty state
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(Dimens.spaceLarge),
+                contentAlignment = Alignment.Center
+            ) {
+                EmptyState(
+                    title = stringResource(R.string.empty_stats_title),
+                    body = stringResource(R.string.empty_stats_body)
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .widthIn(max = Dimens.contentMaxWidth),
+                contentPadding = PaddingValues(
+                    start = Dimens.spaceLarge,
+                    end = Dimens.spaceLarge,
+                    top = Dimens.spaceSmall,
+                    bottom = paddingValues.calculateBottomPadding()
+                ),
+                verticalArrangement = Arrangement.spacedBy(Dimens.spaceLarge)
+            ) {
                     // Period Selector
                     item {
                         ClaySegmentedControl(
@@ -171,14 +174,22 @@ fun StatsScreen(
                                 StatTile(
                                     label = stringResource(R.string.stat_current_streak),
                                     value = "${global.currentStreak}",
-                                    supporting = "days in a row",
+                                    supporting = pluralStringResource(
+                                        R.plurals.days_in_a_row,
+                                        global.currentStreak,
+                                        global.currentStreak
+                                    ),
                                     accentColor = clayColors.terracotta,
                                     modifier = Modifier.weight(1f)
                                 )
                                 StatTile(
                                     label = stringResource(R.string.stat_longest_streak),
                                     value = "${global.longestStreak}",
-                                    supporting = "days record",
+                                    supporting = pluralStringResource(
+                                        R.plurals.days_record,
+                                        global.longestStreak,
+                                        global.longestStreak
+                                    ),
                                     accentColor = clayColors.butter,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -258,12 +269,14 @@ fun StatsScreen(
 
                                         val scheduleDiff = yearlyGoal.aheadBehindSchedule
                                         val scheduleText = when {
-                                            scheduleDiff > 0 -> stringResource(
-                                                R.string.ahead_of_schedule_format,
+                                            scheduleDiff > 0 -> pluralStringResource(
+                                                R.plurals.ahead_of_schedule,
+                                                ceil(scheduleDiff).toInt(),
                                                 String.format("%.1f", scheduleDiff)
                                             )
-                                            scheduleDiff < 0 -> stringResource(
-                                                R.string.behind_schedule_format,
+                                            scheduleDiff < 0 -> pluralStringResource(
+                                                R.plurals.behind_schedule,
+                                                ceil(abs(scheduleDiff)).toInt(),
                                                 String.format("%.1f", abs(scheduleDiff))
                                             )
                                             else -> "Right on schedule"
@@ -277,8 +290,9 @@ fun StatsScreen(
                                         )
 
                                         Text(
-                                            text = stringResource(
-                                                R.string.projected_format,
+                                            text = pluralStringResource(
+                                                R.plurals.projected_books,
+                                                state.projectedBooksByYearEnd,
                                                 state.projectedBooksByYearEnd
                                             ),
                                             style = MaterialTheme.typography.labelSmall,
@@ -348,10 +362,12 @@ fun StatsScreen(
                                         fontWeight = FontWeight.Bold,
                                         color = clayColors.textOnAccent(clayColors.sky)
                                     )
+                                    val sharedPaceInt = eta.sharedPace.toInt()
                                     Text(
-                                        text = stringResource(
-                                            R.string.shared_pace_format,
-                                            eta.sharedPace.toInt()
+                                        text = pluralStringResource(
+                                            R.plurals.shared_pace,
+                                            sharedPaceInt,
+                                            sharedPaceInt
                                         ),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = clayColors.textOnAccent(clayColors.sky).copy(alpha = 0.85f)
@@ -363,21 +379,21 @@ fun StatsScreen(
 
                     // Heatmap (Last 26 Weeks)
                     item {
-                        Text(
-                            text = stringResource(R.string.reading_activity_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        ReadingHeatmap(
-                            pagesPerDay = global.pagesPerDay,
-                            onDayClick = { date, _ -> onDayClick(date) }
-                        )
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(Dimens.spaceHuge))
+                        Box(modifier = Modifier.testTag("stats_last_item")) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.reading_activity_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                ReadingHeatmap(
+                                    pagesPerDay = global.pagesPerDay,
+                                    onDayClick = { date, _ -> onDayClick(date) }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -420,6 +436,7 @@ fun StatsScreen(
                                     BookCoverPlaceholder(
                                         title = dayBook.book.title,
                                         author = dayBook.book.author,
+                                        coverPath = dayBook.book.coverPath,
                                         width = 44.dp,
                                         height = 60.dp
                                     )
@@ -518,4 +535,3 @@ fun StatsScreen(
             }
         }
     }
-}

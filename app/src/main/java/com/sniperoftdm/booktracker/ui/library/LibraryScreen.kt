@@ -43,6 +43,7 @@ import com.sniperoftdm.booktracker.ui.clay.ClayButtonVariant
 import com.sniperoftdm.booktracker.ui.clay.ClayChip
 import com.sniperoftdm.booktracker.ui.clay.ClayElevation
 import com.sniperoftdm.booktracker.ui.clay.ClayFab
+import com.sniperoftdm.booktracker.ui.clay.ClayScreenScaffold
 import com.sniperoftdm.booktracker.ui.clay.ClayIconButton
 import com.sniperoftdm.booktracker.ui.components.BookRow
 import com.sniperoftdm.booktracker.ui.components.ConfirmDialog
@@ -69,12 +70,70 @@ fun LibraryScreen(
     var sortMenuExpanded by remember { mutableStateOf(false) }
     var bookToDelete by remember { mutableStateOf<Book?>(null) }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.TopCenter
-    ) {
+    ClayScreenScaffold(
+        modifier = modifier,
+        title = {
+            Text(
+                text = stringResource(R.string.nav_library),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        actions = {
+            Box {
+                ClayIconButton(
+                    onClick = { sortMenuExpanded = true },
+                    elevation = ClayElevation.Raised,
+                    contentDescription = stringResource(R.string.sort_options)
+                ) {
+                    Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = null)
+                }
+
+                DropdownMenu(
+                    expanded = sortMenuExpanded,
+                    onDismissRequest = { sortMenuExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_last_read)) },
+                        onClick = {
+                            onSortChange(LibrarySortOrder.LAST_READ)
+                            sortMenuExpanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_title)) },
+                        onClick = {
+                            onSortChange(LibrarySortOrder.TITLE)
+                            sortMenuExpanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_progress)) },
+                        onClick = {
+                            onSortChange(LibrarySortOrder.PROGRESS)
+                            sortMenuExpanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_date_added)) },
+                        onClick = {
+                            onSortChange(LibrarySortOrder.DATE_ADDED)
+                            sortMenuExpanded = false
+                        }
+                    )
+                }
+            }
+        },
+        floatingActionButton = {
+            ClayFab(
+                onClick = onNavigateToAddBook,
+                expanded = !listState.isScrollInProgress,
+                icon = { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add_book_title)) },
+                text = { Text(stringResource(R.string.add_book_title)) }
+            )
+        },
+        isTopLevel = true
+    ) { paddingValues ->
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -83,70 +142,11 @@ fun LibraryScreen(
             contentPadding = PaddingValues(
                 start = Dimens.spaceLarge,
                 end = Dimens.spaceLarge,
-                top = Dimens.spaceLarge,
-                bottom = 120.dp
+                top = Dimens.spaceSmall,
+                bottom = paddingValues.calculateBottomPadding()
             ),
             verticalArrangement = Arrangement.spacedBy(Dimens.spaceMedium)
         ) {
-            // Header with Title and Sort Menu
-            item(key = "library_header") {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = Dimens.spaceSmall),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.nav_library),
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Box {
-                        ClayIconButton(
-                            onClick = { sortMenuExpanded = true },
-                            elevation = ClayElevation.Raised,
-                            contentDescription = stringResource(R.string.sort_options)
-                        ) {
-                            Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = null)
-                        }
-
-                        DropdownMenu(
-                            expanded = sortMenuExpanded,
-                            onDismissRequest = { sortMenuExpanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.sort_last_read)) },
-                                onClick = {
-                                    onSortChange(LibrarySortOrder.LAST_READ)
-                                    sortMenuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.sort_title)) },
-                                onClick = {
-                                    onSortChange(LibrarySortOrder.TITLE)
-                                    sortMenuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.sort_progress)) },
-                                onClick = {
-                                    onSortChange(LibrarySortOrder.PROGRESS)
-                                    sortMenuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.sort_date_added)) },
-                                onClick = {
-                                    onSortChange(LibrarySortOrder.DATE_ADDED)
-                                    sortMenuExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
             // Filters Row (Reading, Paused, Finished, All)
             item(key = "filters_row") {
                 Row(
@@ -224,24 +224,11 @@ fun LibraryScreen(
                         onEdit = { onNavigateToEditBook(item.book.id) },
                         onTogglePause = { onTogglePause(item.book) },
                         onMarkFinished = { onMarkFinished(item.book) },
-                        onDelete = { bookToDelete = item.book }
+                        onDelete = { bookToDelete = item.book },
+                        showStatusChip = state.selectedFilter == null
                     )
                 }
             }
-        }
-
-        // Floating Action Button
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = Dimens.spaceLarge, bottom = 96.dp)
-        ) {
-            ClayFab(
-                onClick = onNavigateToAddBook,
-                expanded = !listState.isScrollInProgress,
-                icon = { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add_book_title)) },
-                text = { Text(stringResource(R.string.add_book_title)) }
-            )
         }
     }
 
