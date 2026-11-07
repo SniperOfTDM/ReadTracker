@@ -1,0 +1,19 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "unexpected_root_field": "surprise",
+  "docs": [
+    {
+      "key": "/works/OL77777W",
+      "title": "Future Proof Book",
+      "author_name": ["Dave Miller"],
+      "first_publish_year": 2024,
+      "number_of_pages_median": 200,
+      "cover_i": 777777,
+      "isbn": ["9780140328721"],
+      "edition_count": 1,
+      "some_new_api_field": [1, 2, 3],
+      "nested_metadata": { "rating": 4.8 }
+    }
+  ]
+}

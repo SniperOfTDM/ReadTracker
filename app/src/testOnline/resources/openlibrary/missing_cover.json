@@ -1,0 +1,15 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "docs": [
+    {
+      "key": "/works/OL12345W",
+      "title": "Book Without Cover",
+      "author_name": ["Author One"],
+      "first_publish_year": 2020,
+      "number_of_pages_median": 350,
+      "isbn": ["9780140328721"],
+      "edition_count": 5
+    }
+  ]
+}

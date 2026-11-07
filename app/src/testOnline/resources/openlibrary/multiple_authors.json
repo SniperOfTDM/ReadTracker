@@ -1,0 +1,16 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "docs": [
+    {
+      "key": "/works/OL99999W",
+      "title": "Collaborative Book",
+      "author_name": ["Alice Smith", "Bob Jones", "Carol White"],
+      "first_publish_year": 2022,
+      "number_of_pages_median": 420,
+      "cover_i": 888888,
+      "isbn": ["9780140328721"],
+      "edition_count": 10
+    }
+  ]
+}

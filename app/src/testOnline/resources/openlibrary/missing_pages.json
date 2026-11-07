@@ -1,0 +1,15 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "docs": [
+    {
+      "key": "/works/OL54321W",
+      "title": "Book Without Pages",
+      "author_name": ["Author Two"],
+      "first_publish_year": 2018,
+      "cover_i": 1234567,
+      "isbn": ["9780140328721"],
+      "edition_count": 2
+    }
+  ]
+}
