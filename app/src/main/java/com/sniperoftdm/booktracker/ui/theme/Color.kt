@@ -1,0 +1,47 @@
+package com.sniperoftdm.booktracker.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Light Palette (BookTracker Clay)
+val LightBackground = Color(0xFFF6EFE6)
+val LightFace = Color(0xFFFFF9F2)
+val LightInk = Color(0xFF3A2F2A)
+val LightSecondary = Color(0xFF7A6A60)
+val LightPrimary = Color(0xFF2F6B5E)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFD4EAE2)
+val LightOnPrimaryContainer = Color(0xFF1B4D43)
+val LightError = Color(0xFFC0392B)
+val LightOnError = Color(0xFFFFFFFF)
+val LightEdge = Color(0x223A2F2A)
+val LightOutline = Color(0xFFD8CFC4)
+
+// Light Clay Accents
+val LightSage = Color(0xFFBFD8C8)
+val LightPeach = Color(0xFFF5CDB6)
+val LightButter = Color(0xFFF4DE9F)
+val LightSky = Color(0xFFBFD5EA)
+val LightLilac = Color(0xFFD8CBE8)
+val LightTerracotta = Color(0xFFE08A6A)
+
+// Dark Palette (BookTracker Clay Warm Charcoal)
+val DarkBackground = Color(0xFF1C1815)
+val DarkFace = Color(0xFF2B2420)
+val DarkInk = Color(0xFFF1E8DE)
+val DarkSecondary = Color(0xFFB9ABA0)
+val DarkPrimary = Color(0xFF4FA08D)
+val DarkOnPrimary = Color(0xFF0F322B)
+val DarkPrimaryContainer = Color(0xFF234C43)
+val DarkOnPrimaryContainer = Color(0xFFC5E8DE)
+val DarkError = Color(0xFFE57373)
+val DarkOnError = Color(0xFF370B0B)
+val DarkEdge = Color(0x33F1E8DE)
+val DarkOutline = Color(0xFF4A403A)
+
+// Dark Clay Accents (lifted & desaturated)
+val DarkSage = Color(0xFF8FC4AC)
+val DarkPeach = Color(0xFFE8A98A)
+val DarkButter = Color(0xFFE6C877)
+val DarkSky = Color(0xFF8FB0D1)
+val DarkLilac = Color(0xFFB7A5D6)
+val DarkTerracotta = Color(0xFFF0A585)
