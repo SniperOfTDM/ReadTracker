@@ -2,6 +2,7 @@ package com.sniperoftdm.booktracker.data.backup
 
 import androidx.room.withTransaction
 import com.sniperoftdm.booktracker.data.local.BookTrackerDatabase
+import com.sniperoftdm.booktracker.data.local.CoverStorage
 import com.sniperoftdm.booktracker.data.model.Book
 import com.sniperoftdm.booktracker.data.model.BookStatus
 import com.sniperoftdm.booktracker.data.model.Note
@@ -21,6 +22,7 @@ import java.util.UUID
 class BackupRepositoryImpl(
     private val database: BookTrackerDatabase,
     private val settingsRepository: SettingsRepository,
+    private val coverStorage: CoverStorage? = null,
     private val validator: SessionValidator = SessionValidator(),
     private val onDataChanged: (() -> Unit)? = null
 ) : BackupRepository {
@@ -49,7 +51,9 @@ class BackupRepositoryImpl(
                     startPage = book.startPage,
                     status = book.status.name,
                     goalDateEpochDay = book.goalDateEpochDay,
-                    createdAt = book.createdAt
+                    createdAt = book.createdAt,
+                    isbn = book.isbn,
+                    openLibraryKey = book.openLibraryKey
                 )
             }
 
@@ -76,7 +80,7 @@ class BackupRepositoryImpl(
             }
 
             val payload = BackupPayload(
-                schemaVersion = 1,
+                schemaVersion = 2,
                 exportedAt = System.currentTimeMillis(),
                 books = backupBooks,
                 sessions = backupSessions,
@@ -109,7 +113,7 @@ class BackupRepositoryImpl(
             return@withContext ImportResult.Error("Malformed JSON: ${e.message}")
         }
 
-        if (payload.schemaVersion != 1) {
+        if (payload.schemaVersion !in 1..2) {
             return@withContext ImportResult.Error("Unsupported schemaVersion: ${payload.schemaVersion}")
         }
 
@@ -195,6 +199,11 @@ class BackupRepositoryImpl(
             return@withContext ImportResult.ValidationError(ImportReport(problems))
         }
 
+        // Clear covers folder on REPLACE_ALL import
+        if (mode == ImportMode.REPLACE_ALL) {
+            coverStorage?.clearAll()
+        }
+
         // Execution in a single atomic transaction
         database.withTransaction {
             val existingBooks = database.bookDao().observeAll().first()
@@ -215,7 +224,10 @@ class BackupRepositoryImpl(
                         BookStatus.READING
                     },
                     goalDateEpochDay = book.goalDateEpochDay,
-                    createdAt = book.createdAt
+                    createdAt = book.createdAt,
+                    isbn = book.isbn,
+                    openLibraryKey = book.openLibraryKey,
+                    coverPath = null
                 )
                 val newId = database.bookDao().insert(domainBook)
                 exportIdToRoomId[book.exportId] = newId

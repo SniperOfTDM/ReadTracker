@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BackupPayload(
-    val schemaVersion: Int = 1,
+    val schemaVersion: Int = 2,
     val exportedAt: Long,
     val books: List<BackupBook> = emptyList(),
     val sessions: List<BackupSession> = emptyList(),
@@ -21,7 +21,9 @@ data class BackupBook(
     val startPage: Int = 0,
     val status: String = "READING",
     val goalDateEpochDay: Long? = null,
-    val createdAt: Long
+    val createdAt: Long,
+    val isbn: String? = null,
+    val openLibraryKey: String? = null
 )
 
 @Serializable

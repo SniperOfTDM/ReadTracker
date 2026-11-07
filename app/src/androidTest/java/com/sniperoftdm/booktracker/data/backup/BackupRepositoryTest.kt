@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sniperoftdm.booktracker.data.local.BookTrackerDatabase
+import com.sniperoftdm.booktracker.data.local.CoverStorage
 import com.sniperoftdm.booktracker.data.model.Book
 import com.sniperoftdm.booktracker.data.model.BookStatus
 import com.sniperoftdm.booktracker.data.model.Note
@@ -36,10 +37,12 @@ class BackupRepositoryTest {
     private lateinit var database: BookTrackerDatabase
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var backupRepository: BackupRepository
+    private lateinit var coverStorage: CoverStorage
 
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
+        coverStorage = CoverStorage(context).apply { clearAll() }
         database = Room.inMemoryDatabaseBuilder(context, BookTrackerDatabase::class.java)
             .allowMainThreadQueries()
             .build()
@@ -53,6 +56,7 @@ class BackupRepositoryTest {
         backupRepository = BackupRepositoryImpl(
             database = database,
             settingsRepository = settingsRepository,
+            coverStorage = coverStorage,
             validator = SessionValidator()
         )
     }
@@ -260,5 +264,61 @@ class BackupRepositoryTest {
 
         // Assert nothing written to database
         assertEquals(0, database.bookDao().observeAll().first().size)
+    }
+
+    @Test
+    fun exportAndImport_roundTripsWithIsbnAndOpenLibraryKey() = runBlocking {
+        val book = Book(
+            id = 1L,
+            title = "Refactoring",
+            author = "Martin Fowler",
+            totalPages = 448,
+            startPage = 0,
+            status = BookStatus.READING,
+            isbn = "9780134757599",
+            openLibraryKey = "/works/OL18146743W"
+        )
+        database.bookDao().insert(book)
+
+        val out = ByteArrayOutputStream()
+        val exportResult = backupRepository.export(out)
+        assertTrue(exportResult.isSuccess)
+
+        // Clear DB
+        database.bookDao().delete(book)
+        assertEquals(0, database.bookDao().observeAll().first().size)
+
+        // Import
+        val importResult = backupRepository.import(ByteArrayInputStream(out.toByteArray()))
+        assertTrue(importResult is ImportResult.Success)
+
+        val books = database.bookDao().observeAll().first()
+        assertEquals(1, books.size)
+        val imported = books.first()
+        assertEquals("Refactoring", imported.title)
+        assertEquals("9780134757599", imported.isbn)
+        assertEquals("/works/OL18146743W", imported.openLibraryKey)
+    }
+
+    @Test
+    fun importReplaceAll_clearsCoversFolder() = runBlocking {
+        // Place a mock file in covers folder
+        val dummyCover = File(coverStorage.coversDir, "dummy_999.jpg").apply {
+            writeText("dummy cover bytes")
+        }
+        assertTrue(dummyCover.exists())
+
+        // Create empty backup payload and import with REPLACE_ALL
+        val emptyPayload = BackupPayload(
+            schemaVersion = 2,
+            exportedAt = System.currentTimeMillis()
+        )
+        val jsonText = kotlinx.serialization.json.Json.encodeToString(BackupPayload.serializer(), emptyPayload)
+        val result = backupRepository.import(ByteArrayInputStream(jsonText.toByteArray()), ImportMode.REPLACE_ALL)
+        assertTrue(result is ImportResult.Success)
+
+        // Verify covers directory is cleared
+        val remainingFiles = coverStorage.coversDir.listFiles() ?: emptyArray()
+        assertEquals(0, remainingFiles.size)
     }
 }

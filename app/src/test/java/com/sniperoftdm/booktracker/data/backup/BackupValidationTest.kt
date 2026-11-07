@@ -113,4 +113,68 @@ class BackupValidationTest {
         assertTrue(resultBlankText is ValidationResult.Invalid)
         assertEquals(ValidationReason.NOTE_TEXT_BLANK, (resultBlankText as ValidationResult.Invalid).reason)
     }
+
+    @Test
+    fun schemaVersion2_roundTripsWithIsbnAndOpenLibraryKey() {
+        val payload = BackupPayload(
+            schemaVersion = 2,
+            exportedAt = 1710000000000L,
+            books = listOf(
+                BackupBook(
+                    exportId = "book-v2-1",
+                    title = "Refactoring",
+                    author = "Martin Fowler",
+                    totalPages = 448,
+                    startPage = 0,
+                    status = "READING",
+                    goalDateEpochDay = 20500L,
+                    createdAt = 1710000000000L,
+                    isbn = "9780134757599",
+                    openLibraryKey = "/works/OL18146743W"
+                )
+            )
+        )
+
+        val jsonString = json.encodeToString(BackupPayload.serializer(), payload)
+        val deserialized = json.decodeFromString(BackupPayload.serializer(), jsonString)
+
+        assertEquals(2, deserialized.schemaVersion)
+        assertEquals(1, deserialized.books.size)
+        val book = deserialized.books.first()
+        assertEquals("Refactoring", book.title)
+        assertEquals("9780134757599", book.isbn)
+        assertEquals("/works/OL18146743W", book.openLibraryKey)
+    }
+
+    @Test
+    fun schemaVersion1_importCompatibility_defaultsNewFieldsToNull() {
+        val v1Json = """
+            {
+                "schemaVersion": 1,
+                "exportedAt": 1690000000000,
+                "books": [
+                    {
+                        "exportId": "legacy-1",
+                        "title": "Clean Code",
+                        "author": "Robert C. Martin",
+                        "totalPages": 464,
+                        "startPage": 0,
+                        "status": "FINISHED",
+                        "goalDateEpochDay": null,
+                        "createdAt": 1690000000000
+                    }
+                ],
+                "sessions": [],
+                "notes": []
+            }
+        """.trimIndent()
+
+        val deserialized = json.decodeFromString(BackupPayload.serializer(), v1Json)
+        assertEquals(1, deserialized.schemaVersion)
+        assertEquals(1, deserialized.books.size)
+        val book = deserialized.books.first()
+        assertEquals("Clean Code", book.title)
+        assertEquals(null, book.isbn)
+        assertEquals(null, book.openLibraryKey)
+    }
 }
