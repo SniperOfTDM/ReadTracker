@@ -93,4 +93,48 @@ class MigrationTest {
         assertEquals(0, remainingNotes.getInt(0))
         remainingNotes.close()
     }
+
+    @Test
+    @Throws(IOException::class)
+    fun migrate2To3_addsIsbnOpenLibraryKeyCoverPath_preservesExistingData() {
+        // Step 1: Create Database at version 2 with seed data
+        var db = helper.createDatabase(testDb, 2)
+
+        db.execSQL(
+            """
+            INSERT INTO books (id, title, author, totalPages, startPage, status, goalDateEpochDay, createdAt)
+            VALUES (2, 'Designing Data-Intensive Applications', 'Martin Kleppmann', 600, 0, 'READING', NULL, 1700000000000)
+            """.trimIndent()
+        )
+        db.close()
+
+        // Step 2: Migrate to version 3 using MIGRATION_2_3
+        db = helper.runMigrationsAndValidate(testDb, 3, true, BookTrackerDatabase.MIGRATION_2_3)
+
+        // Verify existing columns preserved and new columns exist with NULL values
+        val cursor = db.query("SELECT id, title, author, totalPages, isbn, openLibraryKey, coverPath FROM books WHERE id = 2")
+        assertTrue(cursor.moveToFirst())
+        assertEquals(2L, cursor.getLong(0))
+        assertEquals("Designing Data-Intensive Applications", cursor.getString(1))
+        assertEquals("Martin Kleppmann", cursor.getString(2))
+        assertEquals(600, cursor.getInt(3))
+        assertTrue(cursor.isNull(4))
+        assertTrue(cursor.isNull(5))
+        assertTrue(cursor.isNull(6))
+        cursor.close()
+
+        // Verify updating the new columns works
+        db.execSQL(
+            """
+            UPDATE books SET isbn = '9781449373320', openLibraryKey = '/works/OL17362309W', coverPath = 'covers/2.jpg'
+            WHERE id = 2
+            """.trimIndent()
+        )
+        val updatedCursor = db.query("SELECT isbn, openLibraryKey, coverPath FROM books WHERE id = 2")
+        assertTrue(updatedCursor.moveToFirst())
+        assertEquals("9781449373320", updatedCursor.getString(0))
+        assertEquals("/works/OL17362309W", updatedCursor.getString(1))
+        assertEquals("covers/2.jpg", updatedCursor.getString(2))
+        updatedCursor.close()
+    }
 }

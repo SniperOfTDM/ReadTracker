@@ -13,5 +13,8 @@ data class Book(
     val startPage: Int = 0,
     val status: BookStatus = BookStatus.READING,
     val goalDateEpochDay: Long? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val isbn: String? = null,
+    val openLibraryKey: String? = null,
+    val coverPath: String? = null
 )

@@ -13,7 +13,7 @@ import com.sniperoftdm.booktracker.data.model.Session
 
 @Database(
     entities = [Book::class, Session::class, Note::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -45,6 +45,14 @@ abstract class BookTrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `books` ADD COLUMN `isbn` TEXT DEFAULT NULL")
+                db.execSQL("ALTER TABLE `books` ADD COLUMN `openLibraryKey` TEXT DEFAULT NULL")
+                db.execSQL("ALTER TABLE `books` ADD COLUMN `coverPath` TEXT DEFAULT NULL")
+            }
+        }
+
         fun getInstance(context: Context): BookTrackerDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -52,7 +60,7 @@ abstract class BookTrackerDatabase : RoomDatabase() {
                     BookTrackerDatabase::class.java,
                     "booktracker.db"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { instance = it }
             }
