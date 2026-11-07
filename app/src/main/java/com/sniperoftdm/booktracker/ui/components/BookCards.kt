@@ -69,6 +69,7 @@ fun BookProgressCard(
             BookCoverPlaceholder(
                 title = book.title,
                 author = book.author,
+                coverPath = book.coverPath,
                 width = 68.dp,
                 height = 96.dp
             )
@@ -167,7 +168,8 @@ fun BookRow(
     onTogglePause: () -> Unit,
     onMarkFinished: () -> Unit,
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showStatusChip: Boolean = true
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val currentPage = stats?.currentPage ?: book.startPage
@@ -188,6 +190,7 @@ fun BookRow(
             BookCoverPlaceholder(
                 title = book.title,
                 author = book.author,
+                coverPath = book.coverPath,
                 width = 48.dp,
                 height = 68.dp
             )
@@ -217,24 +220,40 @@ fun BookRow(
                 }
 
                 if (book.status == BookStatus.FINISHED) {
-                    Text(
-                        text = stringResource(R.string.status_finished),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.status_finished),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        if (showStatusChip) {
+                            StatusChip(status = book.status)
+                        }
+                    }
                 } else {
                     ClayProgressBar(progress = progress, trackHeight = 8.dp)
-                    Text(
-                        text = stringResource(R.string.page_counter_format, currentPage, book.totalPages),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.page_counter_format, currentPage, book.totalPages),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        if (showStatusChip) {
+                            StatusChip(status = book.status)
+                        }
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.width(Dimens.spaceSmall))
-
-            StatusChip(status = book.status)
 
             Box {
                 ClayIconButton(

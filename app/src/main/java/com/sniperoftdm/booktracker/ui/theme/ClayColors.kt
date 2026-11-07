@@ -21,11 +21,24 @@ data class ClayColors(
     val isDark: Boolean
 ) {
     fun textOnAccent(accent: Color): Color {
-        // High contrast readable text on any clay accent face
-        return if (isDark) {
+        // High contrast readable text on any clay accent or container face
+        fun lin(c: Float): Double = if (c <= 0.04045f) (c / 12.92).toDouble() else Math.pow(((c + 0.055) / 1.055), 2.4)
+        val lum = 0.2126 * lin(accent.red) + 0.7152 * lin(accent.green) + 0.0722 * lin(accent.blue)
+        val lumDark = 0.00954
+        val lumLight = 0.87739
+        val contrastWithDark = (maxOf(lum, lumDark) + 0.05) / (minOf(lum, lumDark) + 0.05)
+        val contrastWithLight = (maxOf(lum, lumLight) + 0.05) / (minOf(lum, lumLight) + 0.05)
+        return if (contrastWithDark >= contrastWithLight) {
             Color(0xFF1C1815)
         } else {
-            LightInk
+            Color(0xFFF6F0E8)
+        }
+    }
+
+    fun contentColorFor(surfaceColor: Color): Color {
+        return when (surfaceColor) {
+            face -> if (isDark) DarkInk else LightInk
+            else -> textOnAccent(surfaceColor)
         }
     }
 

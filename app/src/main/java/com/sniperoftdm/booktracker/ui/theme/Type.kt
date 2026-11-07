@@ -12,6 +12,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 44.sp,
         lineHeight = 52.sp,
+        letterSpacing = 0.5.sp,
         fontFeatureSettings = "tnum"
     ),
     displayMedium = TextStyle(
@@ -19,6 +20,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
+        letterSpacing = 0.5.sp,
         fontFeatureSettings = "tnum"
     ),
     displaySmall = TextStyle(
@@ -26,31 +28,36 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
         lineHeight = 38.sp,
+        letterSpacing = 0.5.sp,
         fontFeatureSettings = "tnum"
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
         fontSize = 26.sp,
-        lineHeight = 32.sp
+        lineHeight = 34.sp,
+        letterSpacing = 0.25.sp
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
         fontSize = 22.sp,
-        lineHeight = 28.sp
+        lineHeight = 30.sp,
+        letterSpacing = 0.25.sp
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
-        lineHeight = 24.sp
+        lineHeight = 26.sp,
+        letterSpacing = 0.2.sp
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
-        lineHeight = 24.sp
+        lineHeight = 26.sp,
+        letterSpacing = 0.2.sp
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
@@ -107,7 +114,8 @@ object BookTrackerTypography {
         fontFamily = FontFamily.Serif,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        lineHeight = 26.sp
+        lineHeight = 28.sp,
+        letterSpacing = 0.25.sp
     )
 
     val bookTitleMedium: TextStyle = TextStyle(

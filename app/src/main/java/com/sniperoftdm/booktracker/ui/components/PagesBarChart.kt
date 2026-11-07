@@ -5,8 +5,14 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.unit.max as maxDp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -147,7 +153,7 @@ fun PagesBarChart(
         Spacer(modifier = Modifier.height(4.dp))
 
         // Inset Groove Container with Canvas
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(height)
@@ -164,79 +170,102 @@ fun PagesBarChart(
             val shadeColor = clayColors.shade
             val edgeColor = clayColors.edge
 
-            Canvas(
+            val barCount = items.size
+            val minBarWidth = 6.dp
+            val minSlotWidth = 11.dp
+            val totalRequiredWidth = if (barCount > 0) minSlotWidth * barCount else maxWidth
+            val contentWidth = maxDp(maxWidth, totalRequiredWidth)
+            val isScrollable = contentWidth > maxWidth
+            val scrollState = rememberScrollState()
+
+            LaunchedEffect(items, isScrollable) {
+                if (isScrollable) {
+                    scrollState.scrollTo(scrollState.maxValue)
+                }
+            }
+
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .pointerInput(items) {
-                        detectTapGestures(
-                            onTap = { offset ->
-                                if (items.isEmpty()) return@detectTapGestures
-                                val bottomLabelHeight = 22.dp.toPx()
-                                val chartHeight = size.height - bottomLabelHeight
-                                if (offset.y > chartHeight) {
-                                    selectedIndex = null
-                                    return@detectTapGestures
-                                }
-
-                                val step = size.width / items.size
-                                val index = (offset.x / step).toInt().coerceIn(0, items.lastIndex)
-                                selectedIndex = if (selectedIndex == index) null else index
-                            }
-                        )
-                    }
-            ) {
-                if (items.isEmpty()) return@Canvas
-
-                val bottomLabelHeight = 22.dp.toPx()
-                val chartHeight = size.height - bottomLabelHeight
-                val chartWidth = size.width
-                val barCount = items.size
-                val stepX = chartWidth / barCount
-                val barWidth = (stepX * 0.58f).coerceIn(4.dp.toPx(), 28.dp.toPx())
-
-                // 1. Draw horizontal gridlines (quarter, half, average)
-                val avgY = if (averagePages > 0 && yAxisMax > 0) {
-                    chartHeight - ((averagePages / yAxisMax).toFloat() * chartHeight).coerceIn(0f, chartHeight)
-                } else null
-
-                if (avgY != null) {
-                    val dashPath = Path().apply {
-                        moveTo(0f, avgY)
-                        lineTo(chartWidth, avgY)
-                    }
-                    drawPath(
-                        path = dashPath,
-                        color = primaryColor.copy(alpha = 0.55f),
-                        style = Stroke(
-                            width = 1.5.dp.toPx(),
-                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f)
-                        )
+                    .then(
+                        if (isScrollable) {
+                            Modifier.horizontalScroll(scrollState)
+                        } else Modifier
                     )
-                }
+            ) {
+                Canvas(
+                    modifier = Modifier
+                        .width(contentWidth)
+                        .fillMaxHeight()
+                        .pointerInput(items) {
+                            detectTapGestures(
+                                onTap = { offset ->
+                                    if (items.isEmpty()) return@detectTapGestures
+                                    val bottomLabelHeight = 22.dp.toPx()
+                                    val chartHeight = size.height - bottomLabelHeight
+                                    if (offset.y > chartHeight) {
+                                        selectedIndex = null
+                                        return@detectTapGestures
+                                    }
 
-                // Baseline
-                drawLine(
-                    color = edgeColor.copy(alpha = 0.35f),
-                    start = Offset(0f, chartHeight),
-                    end = Offset(chartWidth, chartHeight),
-                    strokeWidth = 1.dp.toPx()
-                )
+                                    val step = size.width / items.size
+                                    val index = (offset.x / step).toInt().coerceIn(0, items.lastIndex)
+                                    selectedIndex = if (selectedIndex == index) null else index
+                                }
+                            )
+                        }
+                ) {
+                    if (items.isEmpty()) return@Canvas
 
-                // 2. Draw bars
-                items.forEachIndexed { index, item ->
-                    val centerX = stepX * index + (stepX / 2f)
-                    val barLeft = centerX - (barWidth / 2f)
-                    val barFraction = if (yAxisMax > 0) (item.pages.toFloat() / yAxisMax.toFloat()) else 0f
-                    val animatedFraction = (barFraction * riseProgress.value).coerceIn(0f, 1f)
+                    val bottomLabelHeight = 22.dp.toPx()
+                    val chartHeight = size.height - bottomLabelHeight
+                    val chartWidth = size.width
+                    val stepX = chartWidth / barCount
+                    val barWidth = (stepX * 0.58f).coerceAtLeast(minBarWidth.toPx()).coerceAtMost(28.dp.toPx())
 
-                    val isToday = item.date == today
-                    val isSelected = selectedIndex == index
-                    val activeBarColor = if (isToday || isSelected) primaryColor else barColor
+                    // 1. Draw horizontal gridlines (quarter, half, average)
+                    val avgY = if (averagePages > 0 && yAxisMax > 0) {
+                        chartHeight - ((averagePages / yAxisMax).toFloat() * chartHeight).coerceIn(0f, chartHeight)
+                    } else null
 
-                    val minHeight = if (item.pages > 0) 6.dp.toPx() else 0f
-                    val calculatedHeight = chartHeight * animatedFraction
-                    val actualHeight = max(minHeight, calculatedHeight)
-                    val barTop = chartHeight - actualHeight
+                    if (avgY != null) {
+                        val dashPath = Path().apply {
+                            moveTo(0f, avgY)
+                            lineTo(chartWidth, avgY)
+                        }
+                        drawPath(
+                            path = dashPath,
+                            color = primaryColor.copy(alpha = 0.55f),
+                            style = Stroke(
+                                width = 1.5.dp.toPx(),
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f)
+                            )
+                        )
+                    }
+
+                    // Baseline
+                    drawLine(
+                        color = edgeColor.copy(alpha = 0.35f),
+                        start = Offset(0f, chartHeight),
+                        end = Offset(chartWidth, chartHeight),
+                        strokeWidth = 1.dp.toPx()
+                    )
+
+                    // 2. Draw bars
+                    items.forEachIndexed { index, item ->
+                        val centerX = stepX * index + (stepX / 2f)
+                        val barLeft = centerX - (barWidth / 2f)
+                        val barFraction = if (yAxisMax > 0) (item.pages.toFloat() / yAxisMax.toFloat()) else 0f
+                        val animatedFraction = (barFraction * riseProgress.value).coerceIn(0f, 1f)
+
+                        val isToday = item.date == today
+                        val isSelected = selectedIndex == index
+                        val activeBarColor = if (isToday || isSelected) primaryColor else barColor
+
+                        val minHeight = if (item.pages > 0) 4.dp.toPx() else 0f
+                        val calculatedHeight = chartHeight * animatedFraction
+                        val actualHeight = max(minHeight, calculatedHeight)
+                        val barTop = chartHeight - actualHeight
 
                     if (actualHeight > 0f) {
                         val pillRadius = CornerRadius(barWidth / 2f, barWidth / 2f)
@@ -300,4 +329,5 @@ fun PagesBarChart(
             }
         }
     }
+}
 }
