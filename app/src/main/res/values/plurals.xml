@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="pages_count">
+        <item quantity="one">%d page</item>
+        <item quantity="other">%d pages</item>
+    </plurals>
+
+    <plurals name="days_count">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="books_count">
+        <item quantity="one">%d book</item>
+        <item quantity="other">%d books</item>
+    </plurals>
+
+    <plurals name="notes_count">
+        <item quantity="one">%d note</item>
+        <item quantity="other">%d notes</item>
+    </plurals>
+
+    <plurals name="sessions_count">
+        <item quantity="one">%d session</item>
+        <item quantity="other">%d sessions</item>
+    </plurals>
+
+    <plurals name="minutes_count">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <plurals name="hours_count">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+
+    <plurals name="days_in_a_row">
+        <item quantity="one">%d day in a row</item>
+        <item quantity="other">%d days in a row</item>
+    </plurals>
+
+    <plurals name="days_record">
+        <item quantity="one">%d day record</item>
+        <item quantity="other">%d days record</item>
+    </plurals>
+
+    <plurals name="projected_books">
+        <item quantity="one">Projected: %d book by Dec 31</item>
+        <item quantity="other">Projected: %d books by Dec 31</item>
+    </plurals>
+
+    <plurals name="yearly_goal_books">
+        <item quantity="one">Yearly goal: %d book</item>
+        <item quantity="other">Yearly goal: %d books</item>
+    </plurals>
+
+    <plurals name="pace_window_days">
+        <item quantity="one">Pace window: %d day</item>
+        <item quantity="other">Pace window: %d days</item>
+    </plurals>
+
+    <plurals name="no_reading_days">
+        <item quantity="one">No reading · %d day</item>
+        <item quantity="other">No reading · %d days</item>
+    </plurals>
+
+    <plurals name="widget_today_read_plural">
+        <item quantity="one">Today: %d page</item>
+        <item quantity="other">Today: %d pages</item>
+    </plurals>
+
+    <plurals name="quick_log_preview_pages">
+        <item quantity="one">+%1$d page · %2$d → %3$d of %4$d</item>
+        <item quantity="other">+%1$d pages · %2$d → %3$d of %4$d</item>
+    </plurals>
+
+    <plurals name="live_pace_helper">
+        <item quantity="one">You need ~%d page/day to reach this goal</item>
+        <item quantity="other">You need ~%d pages/day to reach this goal</item>
+    </plurals>
+
+    <plurals name="shared_pace">
+        <item quantity="one">Shared pace: %d page/day</item>
+        <item quantity="other">Shared pace: %d pages/day</item>
+    </plurals>
+
+    <plurals name="pages_per_hour">
+        <item quantity="one">Pace: ~%d page/hour</item>
+        <item quantity="other">Pace: ~%d pages/hour</item>
+    </plurals>
+
+    <plurals name="ahead_of_schedule">
+        <item quantity="one">%s book ahead of schedule</item>
+        <item quantity="other">%s books ahead of schedule</item>
+    </plurals>
+
+    <plurals name="behind_schedule">
+        <item quantity="one">%s book behind schedule</item>
+        <item quantity="other">%s books behind schedule</item>
+    </plurals>
+
+    <plurals name="books_finished_this_year">
+        <item quantity="one">%1$d of %2$d book finished this year</item>
+        <item quantity="other">%1$d of %2$d books finished this year</item>
+    </plurals>
+
+    <plurals name="import_success_books">
+        <item quantity="one">%d book</item>
+        <item quantity="other">%d books</item>
+    </plurals>
+
+    <plurals name="import_success_sessions">
+        <item quantity="one">%d session</item>
+        <item quantity="other">%d sessions</item>
+    </plurals>
+
+    <plurals name="import_success_notes">
+        <item quantity="one">%d note</item>
+        <item quantity="other">%d notes</item>
+    </plurals>
+
+    <plurals name="pages_today">
+        <item quantity="one">%d page today</item>
+        <item quantity="other">%d pages today</item>
+    </plurals>
+
+    <plurals name="reminder_streak">
+        <item quantity="one">Keep your %d-day reading streak alive!</item>
+        <item quantity="other">Keep your %d-day reading streak alive!</item>
+    </plurals>
+
+    <plurals name="approximate_pages_count">
+        <item quantity="one">~%d page</item>
+        <item quantity="other">~%d pages</item>
+    </plurals>
+</resources>

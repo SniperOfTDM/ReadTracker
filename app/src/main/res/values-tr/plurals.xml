@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="pages_count">
+        <item quantity="one">%d sayfa</item>
+        <item quantity="other">%d sayfa</item>
+    </plurals>
+
+    <plurals name="days_count">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+
+    <plurals name="books_count">
+        <item quantity="one">%d kitap</item>
+        <item quantity="other">%d kitap</item>
+    </plurals>
+
+    <plurals name="notes_count">
+        <item quantity="one">%d not</item>
+        <item quantity="other">%d not</item>
+    </plurals>
+
+    <plurals name="sessions_count">
+        <item quantity="one">%d kayıt</item>
+        <item quantity="other">%d kayıt</item>
+    </plurals>
+
+    <plurals name="minutes_count">
+        <item quantity="one">%d dakika</item>
+        <item quantity="other">%d dakika</item>
+    </plurals>
+
+    <plurals name="hours_count">
+        <item quantity="one">%d saat</item>
+        <item quantity="other">%d saat</item>
+    </plurals>
+
+    <plurals name="days_in_a_row">
+        <item quantity="one">üst üste %d gün</item>
+        <item quantity="other">üst üste %d gün</item>
+    </plurals>
+
+    <plurals name="days_record">
+        <item quantity="one">%d günlük rekor</item>
+        <item quantity="other">%d günlük rekor</item>
+    </plurals>
+
+    <plurals name="projected_books">
+        <item quantity="one">Yıl sonu tahmini: %d kitap</item>
+        <item quantity="other">Yıl sonu tahmini: %d kitap</item>
+    </plurals>
+
+    <plurals name="yearly_goal_books">
+        <item quantity="one">Yıllık hedef: %d kitap</item>
+        <item quantity="other">Yıllık hedef: %d kitap</item>
+    </plurals>
+
+    <plurals name="pace_window_days">
+        <item quantity="one">Tempo penceresi: %d gün</item>
+        <item quantity="other">Tempo penceresi: %d gün</item>
+    </plurals>
+
+    <plurals name="no_reading_days">
+        <item quantity="one">Okuma yapılmadı · %d gün</item>
+        <item quantity="other">Okuma yapılmadı · %d gün</item>
+    </plurals>
+
+    <plurals name="widget_today_read_plural">
+        <item quantity="one">Bugün: %d sayfa</item>
+        <item quantity="other">Bugün: %d sayfa</item>
+    </plurals>
+
+    <plurals name="quick_log_preview_pages">
+        <item quantity="one">+%1$d sayfa · %2$d → %3$d / %4$d</item>
+        <item quantity="other">+%1$d sayfa · %2$d → %3$d / %4$d</item>
+    </plurals>
+
+    <plurals name="live_pace_helper">
+        <item quantity="one">Hedefe ulaşmak için günde ~%d sayfa okumalısınız</item>
+        <item quantity="other">Hedefe ulaşmak için günde ~%d sayfa okumalısınız</item>
+    </plurals>
+
+    <plurals name="shared_pace">
+        <item quantity="one">Ortak tempo: %d sayfa/gün</item>
+        <item quantity="other">Ortak tempo: %d sayfa/gün</item>
+    </plurals>
+
+    <plurals name="pages_per_hour">
+        <item quantity="one">Hız: ~%d sayfa/saat</item>
+        <item quantity="other">Hız: ~%d sayfa/saat</item>
+    </plurals>
+
+    <plurals name="ahead_of_schedule">
+        <item quantity="one">Programın %s kitap önünde</item>
+        <item quantity="other">Programın %s kitap önünde</item>
+    </plurals>
+
+    <plurals name="behind_schedule">
+        <item quantity="one">Programın %s kitap gerisinde</item>
+        <item quantity="other">Programın %s kitap gerisinde</item>
+    </plurals>
+
+    <plurals name="books_finished_this_year">
+        <item quantity="one">Bu yıl %1$d / %2$d kitap tamamlandı</item>
+        <item quantity="other">Bu yıl %1$d / %2$d kitap tamamlandı</item>
+    </plurals>
+
+    <plurals name="import_success_books">
+        <item quantity="one">%d kitap</item>
+        <item quantity="other">%d kitap</item>
+    </plurals>
+
+    <plurals name="import_success_sessions">
+        <item quantity="one">%d kayıt</item>
+        <item quantity="other">%d kayıt</item>
+    </plurals>
+
+    <plurals name="import_success_notes">
+        <item quantity="one">%d not</item>
+        <item quantity="other">%d not</item>
+    </plurals>
+
+    <plurals name="pages_today">
+        <item quantity="one">Bugün %d sayfa</item>
+        <item quantity="other">Bugün %d sayfa</item>
+    </plurals>
+
+    <plurals name="reminder_streak">
+        <item quantity="one">%d günlük okuma serinizi canlı tutun!</item>
+        <item quantity="other">%d günlük okuma serinizi canlı tutun!</item>
+    </plurals>
+
+    <plurals name="approximate_pages_count">
+        <item quantity="one">~%d sayfa</item>
+        <item quantity="other">~%d sayfa</item>
+    </plurals>
+</resources>
