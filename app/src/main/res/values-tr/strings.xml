@@ -1,0 +1,195 @@
+<resources>
+    <string name="app_name">BookTracker</string>
+    <string name="notification_channel_name">Okuma Hatırlatıcısı</string>
+    <string name="notification_channel_description">Düzenli okumayı teşvik eden günlük bildirim</string>
+    <string name="reminder_streak_text">%d günlük okuma serinizi canlı tutun!</string>
+    <string name="reminder_book_text">%s kitabını okuma vakti!</string>
+    <string name="reminder_default_text">Bugün kitap okumayı unutmayın!</string>
+    <string name="widget_description">Mevcut kitap okuma ilerlemenizi takip edin</string>
+    <string name="widget_empty_title">Aktif okunan kitap yok</string>
+    <string name="widget_empty_subtitle">Bir kitap seçmek için uygulamayı açın</string>
+    <string name="widget_today_read">Bugün: %d sayfa</string>
+    <string name="shortcut_log_pages_short">Sayfa kaydet</string>
+    <string name="shortcut_log_pages_long">Okuma ilerlemesini kaydet</string>
+    <string name="quick_log_title">İlerleme Kaydet</string>
+    <string name="select_book">Kitap Seçin</string>
+    <string name="book_label">Kitap</string>
+    <string name="current_page_label">Mevcut Sayfa</string>
+    <string name="start_session_timer">Okuma Zamanlayıcısını Başlat</string>
+    <string name="cancel_timer">Zamanlayıcıyı İptal Et</string>
+    <string name="timer_active_format" formatted="false">Süre: %02d:%02d</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_save">Kaydet</string>
+    <string name="action_confirm">Onayla</string>
+    <string name="action_discard">Vazgeç</string>
+    <string name="action_edit">Düzenle</string>
+    <string name="action_pause">Duraklat</string>
+    <string name="action_resume">Devam Et</string>
+    <string name="action_mark_finished">Bitti Olarak İşaretle</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_stop_and_log">Durdur ve Kaydet</string>
+
+    <string name="read_today_label">Bugün okunan sayfa</string>
+    <string name="streak_label">Seri</string>
+    <string name="reading_now_header">Şu An Okunanlar</string>
+    <string name="empty_library_title">Kitaplığınız boş</string>
+    <string name="empty_library_body">Okuma yolculuğunuza başlamak için yeni bir kitap ekleyin.</string>
+    <string name="no_reading_books_title">Şu an okunan kitap yok</string>
+    <string name="no_reading_books_body">Şu anda okunan olarak işaretli kitabınız yok. Kitaplığınızdan birine başlayabilirsiniz.</string>
+    <string name="timer_active_for">Okunuyor: %s</string>
+    <string name="total_eta_format">Tüm mevcut kitaplar bu tempoda %s tarihine kadar biter</string>
+    <string name="shared_pace_format">Ortak tempo: %d sayfa/gün</string>
+    <string name="yearly_goal_summary">Bu yıl %1$d / %2$d kitap tamamlandı</string>
+
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_library">Kitaplık</string>
+    <string name="nav_stats">İstatistikler</string>
+    <string name="nav_settings">Ayarlar</string>
+
+    <string name="sort_options">Sıralama seçenekleri</string>
+    <string name="sort_last_read">Son okunan</string>
+    <string name="sort_title">Başlık</string>
+    <string name="sort_progress">İlerleme</string>
+    <string name="sort_date_added">Eklenme tarihi</string>
+
+    <string name="filter_reading">Okunuyor</string>
+    <string name="filter_paused">Duraklatıldı</string>
+    <string name="filter_finished">Tamamlandı</string>
+    <string name="filter_all">Tümü</string>
+    <string name="status_finished">Tamamlandı</string>
+
+    <string name="page_progress_format">%1$d / %2$d sayfa · %%%3$d</string>
+    <string name="page_counter_format">%1$d / %2$d sayfa</string>
+    <string name="more_options">Daha fazla seçenek</string>
+    <string name="delete_book_title">Kitap silinsin mi?</string>
+    <string name="delete_book_message">\"%s\" kitabını silmek istediğinize emin misiniz? İlişkili tüm okuma kayıtları ve notlar da silinecektir.</string>
+
+    <string name="empty_reading_title">Okunan kitap yok</string>
+    <string name="empty_reading_body">Devam eden bir kitabınız yok. Kitaplığınızdan birini seçin veya yeni bir kitap ekleyin.</string>
+    <string name="empty_paused_title">Duraklatılmış kitap yok</string>
+    <string name="empty_paused_body">Şu anda duraklatılmış bir kitap bulunmuyor.</string>
+    <string name="empty_finished_title">Henüz tamamlanan kitap yok</string>
+    <string name="empty_finished_body">Okumaya devam edin! Tamamladığınız kitaplar burada listelenecek.</string>
+
+    <string name="add_book_title">Kitap Ekle</string>
+    <string name="edit_book_title">Kitabı Düzenle</string>
+    <string name="field_book_title_required">Başlık *</string>
+    <string name="field_book_title_placeholder">örn. Atomik Alışkanlıklar</string>
+    <string name="field_author">Yazar</string>
+    <string name="field_author_placeholder">örn. James Clear</string>
+    <string name="field_total_pages_required">Toplam Sayfa *</string>
+    <string name="field_start_page">Başlangıç Sayfası</string>
+    <string name="helper_start_page">Zaten okumuş olduğunuz sayfa</string>
+    <string name="field_goal_date_optional">Hedef Bitiş Tarihi (İsteğe bağlı)</string>
+    <string name="live_pace_helper_format">Hedefe ulaşmak için günde ~%d sayfa okumalısınız</string>
+    <string name="field_status">Durum</string>
+    <string name="discard_changes_title">Değişiklikler iptal edilsin mi?</string>
+    <string name="discard_changes_message">Kaydedilmemiş değişiklikleriniz var. Vazgeçmek istediğinizden emin misiniz?</string>
+    <string name="book_detail_title">Kitap Detayı</string>
+    <string name="not_set">Belirtilmedi</string>
+    <string name="quick_log_preview_format">+%1$d sayfa · %2$d → %3$d / %4$d</string>
+    <string name="finishes_book_notice">🎉 Bu kayıt kitabı tamamlıyor!</string>
+    <string name="pages_per_hour_format">Hız: ~%d sayfa/saat</string>
+    <string name="checkpoint_date_label">Kayıt Tarihi</string>
+
+    <!-- Validation reasons -->
+    <string name="val_end_page_not_greater">Son sayfa önceki kayıttan büyük olmalıdır.</string>
+    <string name="val_end_page_exceeds_total">Son sayfa toplam sayfa sayısını aşamaz.</string>
+    <string name="val_end_page_not_less_than_next">Son sayfa sonraki kayıttan büyük olamaz.</string>
+    <string name="val_timestamp_future">Kayıt tarihi gelecekte olamaz.</string>
+    <string name="val_title_blank">Kitap başlığı boş bırakılamaz.</string>
+    <string name="val_total_pages_not_positive">Toplam sayfa sayısı 0\'dan büyük olmalıdır.</string>
+    <string name="val_start_page_out_of_range">Başlangıç sayfası 0 ile toplam sayfa arasında olmalıdır.</string>
+    <string name="val_total_pages_below_current">Toplam sayfa mevcut ilerlemenin altına düşürülemez.</string>
+    <string name="val_note_text_blank">Not metni boş bırakılamaz.</string>
+    <string name="val_note_page_out_of_range">Not sayfası geçerli aralıkta değil.</string>
+
+    <!-- Stage B strings -->
+    <string name="tab_days">Günler</string>
+    <string name="tab_notes">Notlar</string>
+    <string name="daily_average_label">Günlük ortalama</string>
+    <string name="last_7_days_label">Son 7 gün</string>
+    <string name="pages_left_label">Kalan sayfa</string>
+    <string name="eta_label">Tahmini bitiş</string>
+    <string name="pages_per_hour_label">Sayfa/saat</string>
+    <string name="days_reading_label">Okuma günü</string>
+    <string name="day_badge_format">Bu kitabın %d. günü</string>
+    <string name="no_reading_days_format">Okuma yapılmadı · %d gün</string>
+    <string name="now_on_page_format">şu an %d. sayfada</string>
+    <string name="edit_session_title">Kaydı Düzenle</string>
+    <string name="add_note_placeholder">Düşüncelerinizi veya notlarınızı ekleyin...</string>
+    <string name="empty_notes_title">Henüz not yok</string>
+    <string name="empty_notes_body">Bu kitaptan alıntılar veya düşünceler ekleyin.</string>
+    <string name="edit_note_title">Notu Düzenle</string>
+    <string name="session_deleted">Kayıt silindi</string>
+    <string name="note_deleted">Not silindi</string>
+    <string name="action_undo">Geri Al</string>
+    <string name="period_week">Hafta</string>
+    <string name="period_month">Ay</string>
+    <string name="period_all_time">Tüm Zamanlar</string>
+    <string name="stat_total_pages">Toplam sayfa</string>
+    <string name="stat_best_day">En iyi gün</string>
+    <string name="stat_current_streak">Mevcut seri</string>
+    <string name="stat_longest_streak">En uzun seri</string>
+    <string name="stat_pages_per_hour">Sayfa/saat</string>
+    <string name="stat_books_finished_year">Bu yıl biten</string>
+    <string name="yearly_goal_title">Yıllık Okuma Hedefi</string>
+    <string name="set_yearly_goal_prompt">Yıllık bir okuma hedefi belirleyin</string>
+    <string name="ahead_of_schedule_format">Programın %s kitap önünde</string>
+    <string name="behind_schedule_format">Programın %s kitap gerisinde</string>
+    <string name="projected_format">Yıl sonu tahmini: %d kitap</string>
+    <string name="shared_pace_eta_title">Toplam Okuma Tahmini</string>
+    <string name="reading_activity_title">Okuma Aktivitesi</string>
+    <string name="heatmap_less">Az</string>
+    <string name="heatmap_more">Çok</string>
+    <string name="empty_stats_title">Henüz okuma aktivitesi yok</string>
+    <string name="empty_stats_body">Detaylı istatistikleri ve grafikleri görmek için okuma ilerlemelerinizi kaydedin.</string>
+    <string name="day_sessions_title">%s tarihindeki okumalar</string>
+    <string name="section_reading">Okuma Tercihleri</string>
+    <string name="setting_count_zero_days">Sıfır okunan günleri ortalamaya dahil et</string>
+    <string name="setting_pace_window">Tempo penceresi: %d gün</string>
+    <string name="section_goals">Hedefler</string>
+    <string name="setting_yearly_goal">Yıllık hedef: %d kitap</string>
+    <string name="setting_yearly_goal_off">Yıllık hedef: Kapalı</string>
+    <string name="section_reminder">Günlük Hatırlatıcı</string>
+    <string name="setting_reminder_enabled">Günlük hatırlatıcıyı etkinleştir</string>
+    <string name="setting_reminder_time">Hatırlatıcı saati: %1$02d:%2$02d</string>
+    <string name="send_test_notification">Test bildirimi gönder</string>
+    <string name="permission_notification_rationale">BookTracker günlük okuma hatırlatıcısı gönderebilmek için bildirim iznine ihtiyaç duyar.</string>
+    <string name="permission_notification_denied">Bildirim izni reddedildi. Lütfen sistem ayarlarından etkinleştirin.</string>
+    <string name="open_settings">Ayarları Aç</string>
+    <string name="section_appearance">Görünüm</string>
+    <string name="theme_system">Sistem</string>
+    <string name="theme_light">Açık</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="setting_color_style">Cihaz duvar kağıdı rengini kullan</string>
+    <string name="section_data">Veri ve Yedekleme</string>
+    <string name="action_export_json">Yedeği dışa aktar (JSON)</string>
+    <string name="action_import_json">Yedeği içe aktar (JSON)</string>
+    <string name="import_confirm_title">Yedek içe aktarılsın mı?</string>
+    <string name="import_confirm_message">Bir yedeği içe aktarmak mevcut tüm kitapları, okuma kayıtlarını, notları ve tercihleri sıfırlayacaktır. Devam etmek istiyor musunuz?</string>
+    <string name="import_success_title">İçe Aktarma Tamamlandı</string>
+    <string name="import_success_message">%1$d kitap, %2$d kayıt ve %3$d not başarıyla aktarıldı.</string>
+    <string name="import_error_title">İçe Aktarma Doğrulanamadı</string>
+    <string name="section_about">Hakkında</string>
+    <string name="app_version_format">Sürüm %s</string>
+    <string name="privacy_statement">Tüm verileriniz yalnızca bu cihazda saklanır. Takipçi, hesap veya bulut senkronizasyonu yoktur.</string>
+    <string name="source_licenses">Açık Kaynak Lisansları</string>
+    <string name="section_developer">Geliştirici Seçenekleri</string>
+    <string name="dev_old_debug">Eski Hata Ayıklama Ekranı</string>
+    <string name="dev_gallery">Clay Bileşen Galerisi</string>
+    <string name="dev_seed_data">Örnek Veri Yükle</string>
+    <string name="dev_clear_data">Tüm Verileri Temizle</string>
+    <string name="dev_clear_confirm_title">Tüm veriler temizlensin mi?</string>
+    <string name="dev_clear_confirm_message">Bu işlem tüm kitapları, kayıtları, notları ve ayarları kalıcı olarak silecektir.</string>
+
+    <plurals name="pages_count">
+        <item quantity="one">%d sayfa</item>
+        <item quantity="other">%d sayfa</item>
+    </plurals>
+
+    <plurals name="days_count">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+</resources>
