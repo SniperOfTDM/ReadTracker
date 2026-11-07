@@ -42,3 +42,4 @@ desktop.ini
 
 # Agent cache & temporary files
 graft/
+standby/
